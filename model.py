@@ -1,5 +1,6 @@
 import sqlalchemy as sa
 from flask_sqlalchemy import SQLAlchemy
+
 db = SQLAlchemy()
 
 
@@ -28,5 +29,5 @@ class date01(db.Model):
                    nullable=False)
     repo_name = sa.Column(sa.String(128), nullable=False, default='')
     date_newest = sa.Column(sa.DateTime)
-    date_local = sa.Column(sa.DateTime)  #目前还不知道自动设置更新时间的方法
+    date_local = sa.Column(sa.DateTime)  # 目前还不知道自动设置更新时间的方法
     date_lasttime = sa.Column(sa.DateTime)
