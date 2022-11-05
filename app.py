@@ -1,16 +1,21 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS, cross_origin  # 处理跨域
 import requests
 import json
+import config
 from datetime import datetime
 import os
 from model import db
 from model import *
 
 app = Flask(__name__)
+cors = CORS(app, supports_credentials=True)  #支持跨域
 basedir = os.path.abspath(app.root_path)
 # config databases
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'data.db')
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'data.db')
+# app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+# app.config['SQLALCHEMY_ECHO'] = True  # 显示原始SQL语句
+app.config.from_object(config)  # 读取配置
 db.init_app(app)
 
 
@@ -20,15 +25,16 @@ def commit():
 
     :return:
     """
+    # db.create_all()  # 新建数据库
     # get prams from request
     data = request.json
-    url = data.get('url')
+    url = data.get('url')  #输入的仓库地址
     if url is None:
         return {
             "success": False,
             "message": "No url!"
         }
-    num_layout = data.get('num_layout')
+    num_layout = data.get('num_layout')  #显示的数量？
     if num_layout is None:
         num_layout = 3
 
@@ -140,4 +146,4 @@ def commit():
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run('0.0.0.0', port=5000, debug=True)
