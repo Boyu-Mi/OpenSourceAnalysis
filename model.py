@@ -42,3 +42,16 @@ class date01(db.Model):
     date_newest = sa.Column(sa.DateTime)
     date_local = sa.Column(sa.DateTime)  # 目前还不知道自动设置更新时间的方法
     date_lasttime = sa.Column(sa.DateTime)
+
+class User(db.Model):
+    id = sa.Column(sa.Integer, autoincrement=True,
+                   primary_key=True,
+                   nullable=False)
+    user_type = sa.Column(sa.String(50), nullable=False, default='')
+    name = sa.Column(sa.String(128), nullable=False, default='')
+    company = sa.Column(sa.String(128), nullable=True, default='')
+    avatar_url = sa.Column(sa.String(128), nullable=True, default='')
+    created_at = sa.Column(sa.DateTime)
+    updated_at = sa.Column(sa.DateTime)
+    follower_number = sa.Column(sa.Integer, nullable=False, default=0)
+    public_repo_number = sa.Column(sa.Integer, nullable=False, default=0)

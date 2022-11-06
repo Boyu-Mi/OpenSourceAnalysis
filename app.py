@@ -164,6 +164,7 @@ def commit():
 @app.route('/user/', methods=['GET', 'POST'])
 def user():
     #获取某个用户的信息，包括organization，company
+    # db.create_all()  # 新建数据库
     data = request.json
     user_name = data.get("user_name")
     if user_name is None:  # 没输入用户名
@@ -199,9 +200,20 @@ def user():
     ret["follower_number"] = user_info["followers"]
     ret["created_at"] = user_info["created_at"]
     ret["updated_at"] = user_info["updated_at"]
-
+    date_c = datetime.strptime(ret["created_at"][0:10]
+                                      + ret["created_at"][11:19],
+                                      "%Y-%m-%d%H:%M:%S")
+    date_u = datetime.strptime(ret["updated_at"][0:10]
+                                      + ret["updated_at"][11:19],
+                                      "%Y-%m-%d%H:%M:%S")
     # 存储信息到数据库
-
+    db.session.merge(
+        User(id = ret["id"], user_type = ret["user_type"],
+             name = user_name, company = ret["company"], 
+             avatar_url = ret["avatar_url"], created_at = date_c, updated_at = date_u,
+             follower_number=ret["follower_number"], public_repo_number=ret["public_repo_number"])
+    )
+    db.session.commit()
 
     return ret,200
 
