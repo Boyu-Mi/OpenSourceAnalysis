@@ -9,7 +9,7 @@ from model import db
 from model import *
 
 app = Flask(__name__)
-cors = CORS(app, supports_credentials=True)  #支持跨域
+
 basedir = os.path.abspath(app.root_path)
 # config databases
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'data.db')
@@ -17,9 +17,19 @@ basedir = os.path.abspath(app.root_path)
 # app.config['SQLALCHEMY_ECHO'] = True  # 显示原始SQL语句
 app.config.from_object(config)  # 读取配置
 db.init_app(app)
+cors = CORS(app, supports_credentials=True)  #支持跨域
 
+headers = {}
+try:
+    with open('token', 'r') as token_file:  #本地有token文件，就用token，没有token就直接查询
+        token = token_file.readline()
+        headers = {
+            "Authorization":token
+        }
+except FileNotFoundError:
+    pass
 
-@app.route('/commit', methods=['POST'])
+@app.route('/commit/', methods=['GET', 'POST'])
 def commit():
     """
 
@@ -33,8 +43,8 @@ def commit():
         return {
             "success": False,
             "message": "No url!"
-        }
-    num_layout = data.get('num_layout')  #显示的数量？
+        }, 404  # 这里之前没加404，是有什么原因吗？先补上
+    num_layout = data.get('num_layout')  #展示的突出贡献者的数量
     if num_layout is None:
         num_layout = 3
 
@@ -50,7 +60,7 @@ def commit():
                    "message": "Invalid github repo ink!"
                }, 404
     try:
-        api_request = requests.get(url=content_url, timeout=5)
+        api_request = requests.get(url=content_url, headers=headers, timeout=5)
     except requests.exceptions.ReadTimeout:
         # timeout exception(max time is 5s)
         return {
@@ -67,16 +77,18 @@ def commit():
     contents = json.loads(api_request.content)
     if contents:
         owner = contents['owner']['login']  # owner's id
-        avatar_url = contents['owner']['avatar_url']
-        html_url = contents['owner']['html_url']
+        avatar_url = contents['owner']['avatar_url'] # 头像地址
+        html_url = contents['owner']['html_url']  # github用户地址
         description = contents['description']
         topics = contents['topics']
         stargazers_count = contents['stargazers_count']  # number of star
         created_at = contents['created_at']
         content_id = contents['id']
+        forks_count = contents['forks_count']
+        watchers_count = contents['watchers_count']
         # noinspection DuplicatedCode
         try:
-            api_request = requests.get(url=api_url, timeout=5, params={"per_page": 100})
+            api_request = requests.get(url=api_url, headers=headers, timeout=5, params={"per_page": 100})
         except requests.exceptions.ReadTimeout:
             # timeout exception(max time is 5s)
             return {
@@ -90,9 +102,10 @@ def commit():
                        "message": "Fail to get info!"
                    }, 404
         api_ret = json.loads(api_request.content)
-        committer_dict = {}
+        committer_dict = {}  # 字典{提交者 : 提交数量}
         date_list = []
         for committer in api_ret:
+            id = committer["sha"]
             date_it = committer['commit']['author']['date']
             date = list(date_it)
             date.pop(10)  # pop 'T'
@@ -100,16 +113,19 @@ def commit():
             date_list.append(datetime.strptime("".join(date), "%Y-%m-%d%H:%M:%S"))
 
             # 数据插入数据库,commits的数据
-            db.session.add(
-                Commits(owner_name=u_list[-2], repo_name=u_list[-1], con_name=committer['commit']['author']['name'])
+            # db.session.add(
+            # 改add为merge，若无则add,若有则update，这样避免数据库太大
+            db.session.merge(
+                Commits(id=id,owner_name=u_list[-2], repo_name=u_list[-1], con_name=committer['commit']['author']['name'])
             )
 
             # 获取并插入时间，对字符串处理一下存进数据库
             date1 = datetime.strptime(committer['commit']['author']['date'][0:10] + ""
                                       + committer['commit']['author']['date'][11:19],
                                       "%Y-%m-%d%H:%M:%S")
-            db.session.add(
-                date01(repo_name=u_list[-1], date_newest=date1, date_local=datetime.now(), date_lasttime=date1)
+            # db.session.add(
+            db.session.merge(
+                date01(id=id, repo_name=u_list[-1], date_newest=date1, date_local=datetime.now(), date_lasttime=date1)
             )
 
         sorted_date = sorted(date_list, reverse=True)
@@ -125,7 +141,7 @@ def commit():
             else:
                 committer_dict[key] += 1
 
-        sorted_dict = sorted(committer_dict.items(), key=lambda kv: (kv[1], kv[0]), reverse=True)
+        sorted_dict = sorted(committer_dict.items(), key=lambda kv: (kv[1], kv[0]), reverse=True)  #按(kv[1], kv[0])降序排序
         target = u_list[3] + '/' + u_list[4]
 
         commit_users = []
@@ -141,9 +157,53 @@ def commit():
                 "target": target, "id": content_id, "url": url, "owner": owner, "avatar_url": avatar_url,
                 "html_url": html_url, "description": description, "topics": topics,
                 "stargazers_count": stargazers_count, "created_at": created_at, "commit_users": commit_users,
-                "date_newest": date_newest
+                "date_newest": date_newest,"forks_count":forks_count,
+                "watchers_count" :watchers_count
                 }, 200
 
+@app.route('/user/', methods=['GET', 'POST'])
+def user():
+    #获取某个用户的信息，包括organization，company
+    data = request.json
+    user_name = data.get("user_name")
+    if user_name is None:  # 没输入用户名
+        return {
+            "success": False,
+            "message": "No user name!"
+        }, 404
+    # 用户名存在
+    user_url = "https://api.github.com/users/"+user_name
+    try:
+        user_request = requests.get(url=user_url, headers=headers, timeout=5)
+        # print(headers) # debug
+    except requests.exceptions.ReadTimeout:
+        # timeout exception(max time is 5s)
+        return {
+                   "success": False,
+                   "message": "Timeout!"
+               }, 404
+    if not user_request.ok:
+            # invalid result，可能的原因是该用户名不存在
+            return {
+                       "success": False,
+                       "message": "Fail to get info! The user may not exist."
+                   }, 404
+    user_info = json.loads(user_request.content)
+    ret = {"success": True, "message": "success!","user_name":user_name}
+    ret["id"] = user_info["id"]
+    ret["avatar_url"] = user_info["avatar_url"]
+    ret["user_url"] = user_info["html_url"]
+    ret["user_type"] = user_info["type"] # Organization,User等
+    ret["company"] = user_info["company"]
+    ret["public_repo_number"] = user_info["public_repos"]
+    ret["follower_number"] = user_info["followers"]
+    ret["created_at"] = user_info["created_at"]
+    ret["updated_at"] = user_info["updated_at"]
+
+    # 存储信息到数据库
+
+
+    return ret,200
 
 if __name__ == '__main__':
     app.run('0.0.0.0', port=5000, debug=True)

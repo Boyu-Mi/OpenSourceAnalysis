@@ -6,7 +6,10 @@ db = SQLAlchemy()
 
 
 class Contributors(db.Model):
-    id = sa.Column(sa.Integer, autoincrement=True,
+    # id = sa.Column(sa.Integer, autoincrement=True,
+    #                primary_key=True,
+    #                nullable=False)
+    id = sa.Column(sa.Integer,
                    primary_key=True,
                    nullable=False)
     owner_name = sa.Column(sa.String(128), nullable=False, default='')
@@ -16,7 +19,11 @@ class Contributors(db.Model):
 
 
 class Commits(db.Model):
-    id = sa.Column(sa.Integer, autoincrement=True,
+    # id = sa.Column(sa.Integer, autoincrement=True,
+    #                primary_key=True,
+    #                nullable=False)
+    # id为commit的sha值，为了防止越界直接用字符串表示，作为主键唯一标识一次commit
+    id = sa.Column(sa.String(40),
                    primary_key=True,
                    nullable=False)
     owner_name = sa.Column(sa.String(128), nullable=False, default='')
@@ -25,7 +32,10 @@ class Commits(db.Model):
 
 
 class date01(db.Model):
-    id = sa.Column(sa.Integer, autoincrement=True,
+    # id = sa.Column(sa.Integer, autoincrement=True,
+    #                primary_key=True,
+    #                nullable=False)
+    id = sa.Column(sa.String(40),
                    primary_key=True,
                    nullable=False)
     repo_name = sa.Column(sa.String(128), nullable=False, default='')
