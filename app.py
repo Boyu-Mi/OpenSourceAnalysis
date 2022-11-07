@@ -1,21 +1,16 @@
 from flask import Flask, request, jsonify
-from flask_cors import CORS, cross_origin  # 处理跨域
 import requests
 import json
-import config
 from datetime import datetime
 import os
 from model import db
 from model import *
 
 app = Flask(__name__)
-
 basedir = os.path.abspath(app.root_path)
 # config databases
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'data.db')
-# app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-# app.config['SQLALCHEMY_ECHO'] = True  # 显示原始SQL语句
-app.config.from_object(config)  # 读取配置
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'data.db')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 cors = CORS(app, supports_credentials=True)  #支持跨域
 
@@ -35,10 +30,9 @@ def commit():
 
     :return:
     """
-    # db.create_all()  # 新建数据库
     # get prams from request
     data = request.json
-    url = data.get('url')  #输入的仓库地址
+    url = data.get('url')
     if url is None:
         return {
             "success": False,
