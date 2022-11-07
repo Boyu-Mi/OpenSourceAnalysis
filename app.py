@@ -3,6 +3,9 @@ import requests
 import json
 from datetime import datetime
 import os
+
+from flask_cors import CORS
+
 from model import db
 from model import *
 
