@@ -161,6 +161,73 @@ def commit():
                 "watchers_count" :watchers_count
                 }, 200
 
+
+@app.route('/contributors/', methods=['GET', 'POST'])
+def contributors():
+    """
+    返回仓库的贡献者
+    :return:
+    [
+    (contributor1.id, contributor1.number_of_contributions),
+    (contributor2.id, contributor2.number_of_contributions),
+    ...
+    ]
+    """
+    data = request.json
+    url = data.get('url')
+    if url is None:
+        return {
+            "success": False,
+            "message": "No url!"
+        }, 404
+    threshold = 0.2
+    u_list = url.split('/')
+    contributor_url = 'https://api.github.com/repos/' + u_list[-2] + '/' + u_list[-1] + '/contributors'
+    repo_info_url = 'https://api.github.com/repos/' + u_list[-2] + '/' + u_list[-1]
+    # handle exceptions while getting commit info
+    if 'github.com' not in u_list:
+        return {
+                   "success": False,
+                   "message": "Invalid github repo ink!"
+               }, 404
+    try:
+        contributor_info_request = requests.get(url=contributor_url, headers=headers, timeout=5)
+        repo_info_request = requests.get(url=repo_info_url, headers=headers, timeout=5)
+    except requests.exceptions.ReadTimeout:
+        # timeout exception(max time is 5s)
+        return {
+                   "success": False,
+                   "message": "Timeout!"
+               }, 404
+    if not contributor_info_request.ok and not repo_info_request.ok:
+        # invalid result
+        return {
+                   "success": False,
+                   "message": "Fail to get info!"
+               }, 404
+
+    contribution_info = json.loads(contributor_info_request.content)
+    repo_info = json.loads(repo_info_request.content)
+    contributors_list = []
+    if contribution_info:
+        for item in contribution_info:
+            contributors_list.append(
+                (item['login'], item['contributions'])
+            )
+            db.session.merge(
+                Contributors(
+                    owner_name=repo_info['owner']['login'],
+                    repo_name=repo_info['name'],
+                    con_name=item['login'],
+                    con_num=item['contributions']
+                )
+            )
+        db.session.commit()
+        return {"success": True,
+                "message": "success!"
+                }, 200
+
+
 @app.route('/user/', methods=['GET', 'POST'])
 def user():
     #获取某个用户的信息，包括organization，company
