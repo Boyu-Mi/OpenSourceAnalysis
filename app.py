@@ -3,7 +3,7 @@ import requests
 import json
 from datetime import datetime
 import os
-
+from sqlalchemy.sql import and_, or_
 from flask_cors import CORS
 
 from model import db
@@ -213,18 +213,31 @@ def contributors():
             contributors_list.append(
                 (item['login'], item['contributions'])
             )
-            db.session.merge(
-                Contributors(
-                    owner_name=repo_info['owner']['login'],
-                    repo_name=repo_info['name'],
-                    con_name=item['login'],
-                    con_num=item['contributions']
+            if Contributors.query.filter(and_(repo_name=repo_info['name'], con_name=item['login'])).all():
+                # 数据库中已经存在该仓库中该贡献者的信息
+                db.session.query(Contributors).filter(and_(repo_name=repo_info['name'], con_name=item['login'])).update(
+                    # 该仓库，该贡献者的贡献数量
+                    {Contributors.con_num: item['contributions']}
                 )
-            )
+            else:
+                # 数据库中不存在该仓库中该贡献者的信息，则添加该仓库，该贡献者的贡献数据
+                db.session.add(
+                    Contributors(
+                        owner_name=repo_info['owner']['login'],
+                        repo_name=repo_info['name'],
+                        con_name=item['login'],
+                        con_num=item['contributions']
+                    )
+                )
         db.session.commit()
         return {"success": True,
-                "message": "success!"
+                "message": "success!",
+                "content": json.dumps(contributors_list)
                 }, 200
+    else:
+        return {"success": False,
+                "message": "cannot get contribution info"
+                }, 404
 
 
 @app.route('/user/', methods=['GET', 'POST'])
