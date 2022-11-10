@@ -55,3 +55,13 @@ class User(db.Model):
     updated_at = sa.Column(sa.DateTime)
     follower_number = sa.Column(sa.Integer, nullable=False, default=0)
     public_repo_number = sa.Column(sa.Integer, nullable=False, default=0)
+    time = sa.Column(sa.DateTime)
+
+class Commit_count(db.Model):
+    repo_name = sa.Column(sa.String(128), primary_key=True, nullable=False, default='') #联合主键
+    owner_name = sa.Column(sa.String(128), primary_key=True, nullable=False, default='')
+    commit_total = sa.Column(sa.Integer, nullable=False, default=0)
+    date_from = sa.Column(sa.DateTime, primary_key=True)
+    date_to = sa.Column(sa.DateTime, primary_key=True)
+    commit_by_time = sa.Column(sa.Integer, nullable=False, default=0)
+    time = sa.Column(sa.DateTime)
