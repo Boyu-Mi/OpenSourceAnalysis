@@ -131,6 +131,134 @@ def Contribution_from(request):
 
 ```
 #### response body
-``` json
+
+
+
+### @app.route('/contributors/all', methods=['GET', 'POST'])
 
 ```
+def contributors()
+```
+
+#### <span id="jump">request body</span>
+
+```
+{
+    "url": "https://github.com/tianzhi0549/FCOS"  #仓库链接
+    "update": #bool变量，为true时，说明需要从仓库同步贡献信息并更新数据库，
+    					为false时，说明只需从数据库中查询贡献者信息，无需同步或更新
+}
+```
+
+#### response body
+
+**"update"为true时**
+
+- 获取成功:
+
+    ```
+    {
+        "content"：[贡献者ID(string)，贡献量(int)]的list
+        "message": "success!"
+        "success": true
+    }, 200
+    ```
+
+    例:
+
+    ```
+    {
+      "content": "[[\"tianzhi0549\", 132], [\"fmassa\", 23], [\"chhshen\", 12], [\"zimenglan-sysu-512\", 7], [\"botcs\", 6], [\"wat3rBro\", 6], [\"soumith\", 5], [\"stanstarks\", 4], [\"stan-haochen\", 4], [\"ausk\", 4], [\"keineahnung2345\", 4], [\"bernhardschaefer\", 3], [\"CoinCheung\", 3], [\"Xudangliatiger\", 3], [\"ClimbsRocks\", 3], [\"103yiran\", 2], [\"apacha\", 2], [\"henrywang1\", 2], [\"robotmlcourse\", 2], [\"LeviViana\", 2], [\"belowmit\", 2], [\"killthekitten\", 2], [\"rodrigoberriel\", 2], [\"newstzpz\", 2], [\"Godricly\", 2], [\"zhangliliang\", 2], [\"yelantf\", 2], [\"jario-jin\", 2], [\"aaronlelevier\", 1], [\"akiomik\", 1]]",
+      "message": "success!",
+      "success": true
+    }, 200
+    ```
+
+- 获取失败(可能为api使用量达到上限)
+
+  ```
+  {
+      "message": "Fail to get info!",
+      "success": false
+  }, 404
+  ```
+
+
+- 获取超时(需要检查网络连接)
+
+  ```
+  {
+      "success": False, 
+      "message": "Timeout!"
+  }, 404
+  ```
+
+- 没有贡献者
+
+  ```
+  {
+      "success": False,
+      "message": "cannot get contribution info"
+  }, 404
+  ```
+
+**"update"为false时**
+
+- 获取成功
+
+    ```
+    {
+        "success": True,
+        "message": "success!",
+        "content": json.dumps(ret_con_list)
+    }, 200
+    ```
+
+- 数据库中没有该仓库的贡献信息
+
+    ```
+    {
+        "success": False,
+        "message": "cannot get contribution info, please check the database"
+    }, 404
+    ```
+
+### @app.route('/contributors/core'methods=['GET', 'POST'])
+
+```
+def core_contributors():
+    """
+    返回仓库的核心贡献者
+    :return:
+    [
+    (contributor1.id, contributor1.number_of_contributions),
+    (contributor2.id, contributor2.number_of_contributions),
+    ...
+    ]
+    """
+```
+
+#### request body
+
+同上。
+
+#### response body
+
+- 获取失败
+
+  ```
+  return {
+      "success": False,
+      "message": "failed to get contributor info."
+  }, 404
+  ```
+
+- 获取成功
+
+  ```
+  return {
+      "success": True,
+      "message": "success!",
+      "content": json.dumps(contributor_lst[:slice_len])
+  }, 200
+  ```

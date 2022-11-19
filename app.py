@@ -22,7 +22,7 @@ basedir = os.path.abspath(app.root_path)
 # app.config['SQLALCHEMY_ECHO'] = True  # 显示原始SQL语句
 app.config.from_object(config)  # 读取配置
 db.init_app(app)
-cors = CORS(app, supports_credentials=True)  #支持跨域
+cors = CORS(app, supports_credentials=True)  # 支持跨域
 
 headers = {}
 try:
@@ -44,7 +44,7 @@ def commit():
     # get prams from request
     data = request.json
     url = data.get('url')
-    url = url.strip('/')
+    # url = url.strip('/')
     if url is None:
         return {
                    "success": False,
@@ -169,7 +169,7 @@ def commit():
                 }, 200
 
 
-@app.route('/contributors/', methods=['GET', 'POST'])
+@app.route('/contributors/all', methods=['GET', 'POST'])
 def contributors():
     """
     返回仓库的贡献者
@@ -182,14 +182,37 @@ def contributors():
     """
     data = request.json
     url = data.get('url')
+    is_update = data.get('update')
     url = url.strip('/')
     if url is None:
         return {
                    "success": False,
                    "message": "No url!"
                }, 404
-    threshold = 0.2
+
     u_list = url.split('/')
+
+    if not is_update:
+        # 不需要更新，直接从数据库查询
+        repo_name = u_list[-1]
+        ret_con_list = []
+        contributors_list = db.session.query(Contributors).filter_by(repo_name=repo_name).all()
+        if not contributors_list:
+            return {
+                       "success": False,
+                       "message": "cannot get contribution info, please check the database"
+                   }, 404
+
+        for Contributor in contributors_list:
+            ret_con_list.append((
+                Contributor.con_name, Contributor.con_num
+            ))
+        return {
+                   "success": True,
+                   "message": "success!",
+                   "content": json.dumps(ret_con_list)
+               }, 200
+
     contributor_url = 'https://api.github.com/repos/' + u_list[-2] + '/' + u_list[-1] + '/contributors'
     repo_info_url = 'https://api.github.com/repos/' + u_list[-2] + '/' + u_list[-1]
     # handle exceptions while getting commit info
@@ -222,9 +245,9 @@ def contributors():
             contributors_list.append(
                 (item['login'], item['contributions'])
             )
-            if Contributors.query.filter(and_(repo_name=repo_info['name'], con_name=item['login'])).all():
+            if db.session.query(Contributors).filter_by(repo_name=repo_info['name'], con_name=item['login']).all():
                 # 数据库中已经存在该仓库中该贡献者的信息
-                db.session.query(Contributors).filter(and_(repo_name=repo_info['name'], con_name=item['login'])).update(
+                db.session.query(Contributors).filter_by(repo_name=repo_info['name'], con_name=item['login']).update(
                     # 该仓库，该贡献者的贡献数量
                     {Contributors.con_num: item['contributions']}
                 )
@@ -239,14 +262,46 @@ def contributors():
                     )
                 )
         db.session.commit()
-        return {"success": True,
-                "message": "success!",
-                "content": json.dumps(contributors_list)
-                }, 200
+        return {
+                   "success": True,
+                   "message": "success!",
+                   "content": json.dumps(contributors_list)
+               }, 200
     else:
-        return {"success": False,
-                "message": "cannot get contribution info"
-                }, 404
+        return {
+                   "success": False,
+                   "message": "cannot get contribution info"
+               }, 404
+
+
+@app.route('/contributors/core', methods=['GET', 'POST'])
+def core_contributors():
+    """
+    返回仓库的核心贡献者
+    :return:
+    [
+    (contributor1.id, contributor1.number_of_contributions),
+    (contributor2.id, contributor2.number_of_contributions),
+    ...
+    ]
+    """
+    data = request.json
+    url = data.get('url')
+    is_update = data.get('update')
+    threshold = 0.2
+    res = requests.post(url='http://127.0.0.1:5000/contributors/all', json={"url": url, "update": is_update})
+    if res is None or not json.loads(res.content).get('success'):
+        return {
+                   "success": False,
+                   "message": "failed to get contributor info."
+               }, 404
+    contributor_lst = eval(json.loads(res.content).get('content'))
+    slice_len = int(max(len(contributor_lst) * threshold, 1))
+    return {
+                   "success": True,
+                   "message": "success!",
+                   "content": json.dumps(contributor_lst[:slice_len])
+               }, 200
 
 
 @app.route('/user/', methods=['GET', 'POST'])
@@ -286,8 +341,8 @@ def user():
     ret["company"] = user_info["company"]
     ret["public_repo_number"] = user_info["public_repos"]
     ret["follower_number"] = user_info["followers"]
-    ret["created_at"] = user_info["created_at"][0:10]+' '+user_info["created_at"][11:19]
-    ret["updated_at"] = user_info["updated_at"][0:10]+' '+user_info["updated_at"][11:19]
+    ret["created_at"] = user_info["created_at"][0:10] + ' ' + user_info["created_at"][11:19]
+    ret["updated_at"] = user_info["updated_at"][0:10] + ' ' + user_info["updated_at"][11:19]
     time = datetime.now()
     timestr = time.strftime("%Y-%m-%d %H:%M:%S")
     ret["time"] = timestr
@@ -331,12 +386,14 @@ def user():
 总共就1页, 在那一页:(无last)
 {}
 '''
+
+
 @app.route('/commit_by_time/', methods=['GET', 'POST'])
 def commit_by_time():
     # 返回: total_commit 按时间的commit数, 默认起止年月日，输入允许为空（不传对应参数即可。）
     # db.create_all()  # 新建数据库
     data = request.json
-    year_from = data.get("year_from") # 都是整数
+    year_from = data.get("year_from")  # 都是整数
     year_to = data.get("year_to")
     month_from = data.get("month_from")
     month_to = data.get("month_to")
@@ -352,7 +409,8 @@ def commit_by_time():
                }, 404
     # process the url
     u_list = url.split('/')
-    commit_url = 'https://api.github.com/repos/' + u_list[-2] + '/' + u_list[-1] + '/commits'  # the url to get commit info
+    commit_url = 'https://api.github.com/repos/' + u_list[-2] + '/' + u_list[
+        -1] + '/commits'  # the url to get commit info
 
     # handle exceptions while getting commit info
     if 'github.com' not in u_list:
@@ -375,19 +433,19 @@ def commit_by_time():
                    "message": "Fail to get info!"
                }, 404
     try:
-        date_from, date_to = get_complete_date(time_unit,year_from,year_to,month_from,month_to,day_from,day_to)
+        date_from, date_to = get_complete_date(time_unit, year_from, year_to, month_from, month_to, day_from, day_to)
     except ValueError:
         return {
-                    "success": False,
-                    "message": "Date out of range!"
-                }, 404
+                   "success": False,
+                   "message": "Date out of range!"
+               }, 404
     except TypeError:
         return {
-                    "success": False,
-                    "message": "Time unit invalid!"
-                }, 404
+                   "success": False,
+                   "message": "Time unit invalid!"
+               }, 404
     try:
-        commit_count_by_time = get_commit_by_time(date_from,date_to,u_list)
+        commit_count_by_time = get_commit_by_time(date_from, date_to, u_list)
     except requests.exceptions.ReadTimeout:
         return {
                    "success": False,
@@ -403,9 +461,9 @@ def commit_by_time():
     ret["owner_name"] = u_list[-2]
     ret["commit_count_by_time"] = commit_count_by_time
 
-    date_all_from, date_all_to = get_complete_date("year",None,None,None,None,None,None)
+    date_all_from, date_all_to = get_complete_date("year", None, None, None, None, None, None)
     try:
-        commit_count_total = get_commit_by_time(date_all_from,date_all_to,u_list)
+        commit_count_total = get_commit_by_time(date_all_from, date_all_to, u_list)
     except requests.exceptions.ReadTimeout:
         return {
                    "success": False,
@@ -423,21 +481,22 @@ def commit_by_time():
 
     # 存储到数据库
     db.session.merge(
-        Commit_count(repo_name=u_list[-1],owner_name=u_list[-2],
-        commit_total=commit_count_total,commit_by_time=commit_count_by_time,
-        date_from=datetime.strptime(date_from,"%Y-%m-%dT%H:%M:%SZ"),
-        date_to=datetime.strptime(date_to,"%Y-%m-%dT%H:%M:%SZ"),
-        time=time)
+        Commit_count(repo_name=u_list[-1], owner_name=u_list[-2],
+                     commit_total=commit_count_total, commit_by_time=commit_count_by_time,
+                     date_from=datetime.strptime(date_from, "%Y-%m-%dT%H:%M:%SZ"),
+                     date_to=datetime.strptime(date_to, "%Y-%m-%dT%H:%M:%SZ"),
+                     time=time)
     )
     db.session.commit()
 
     return ret, 200
 
-def get_complete_date(time_unit,year_from,year_to,month_from,month_to,day_from,day_to):
-    try: #判断日期合法性
+
+def get_complete_date(time_unit, year_from, year_to, month_from, month_to, day_from, day_to):
+    try:  # 判断日期合法性
         # 处理空值
         if year_from is None:
-                year_from = 2000 # github创建时间2008
+            year_from = 2000  # github创建时间2008
         if year_to is None:
             year_to = datetime.today().year
         if month_from is None:
@@ -447,32 +506,33 @@ def get_complete_date(time_unit,year_from,year_to,month_from,month_to,day_from,d
         if day_from is None:
             day_from = 1
         if day_to is None:
-            weekday,day_to = calendar.monthrange(year_to,month_to)
+            weekday, day_to = calendar.monthrange(year_to, month_to)
         if time_unit == "year":
-            date_from = datetime(year_from,1,1,0,0,0)
-            date_to = datetime(year_to+1,1,1,0,0,0)
+            date_from = datetime(year_from, 1, 1, 0, 0, 0)
+            date_to = datetime(year_to + 1, 1, 1, 0, 0, 0)
         elif time_unit == "month":
-            date_from = datetime(year_from,month_from,1,0,0,0)
+            date_from = datetime(year_from, month_from, 1, 0, 0, 0)
 
             if month_to == 12:
                 year_to += 1
                 month_to = 1
-            date_to = datetime(year_to,month_to,1,0,0,0)
+            date_to = datetime(year_to, month_to, 1, 0, 0, 0)
         elif time_unit == "day":
-            date_from = datetime(year_from,month_from,day_from,0,0,0)
-            date_to = datetime(year_to,month_to,day_to,0,0,0)+timedelta(days=1)
+            date_from = datetime(year_from, month_from, day_from, 0, 0, 0)
+            date_to = datetime(year_to, month_to, day_to, 0, 0, 0) + timedelta(days=1)
         else:
             raise TypeError
     except ValueError:
         raise
-    date_from =date_from.strftime("%Y-%m-%dT%H:%M:%SZ")
+    date_from = date_from.strftime("%Y-%m-%dT%H:%M:%SZ")
     date_to = date_to.strftime("%Y-%m-%dT%H:%M:%SZ")
-    return (date_from,date_to)
+    return (date_from, date_to)
 
-def get_commit_by_time(date_from,date_to,u_list):
-    param = {"per_page":100, "since":date_from, "until":date_to} # 按时间获取请求的参数
-    #获取commit数据
-    commit_url = 'https://api.github.com/repos/' + u_list[-2]+'/'+u_list[-1] + '/commits'
+
+def get_commit_by_time(date_from, date_to, u_list):
+    param = {"per_page": 100, "since": date_from, "until": date_to}  # 按时间获取请求的参数
+    # 获取commit数据
+    commit_url = 'https://api.github.com/repos/' + u_list[-2] + '/' + u_list[-1] + '/commits'
     try:
         commit_request = requests.get(url=commit_url, headers=headers, timeout=5, params=param)
     except requests.exceptions.ReadTimeout:
@@ -480,23 +540,25 @@ def get_commit_by_time(date_from,date_to,u_list):
     if not commit_request.ok:
         raise requests.exceptions.HTTPError
     commit_info = json.loads(commit_request.content)
-    if len(commit_request.links) == 0: # 字典为空，返回值为{}，只有一页
+    if len(commit_request.links) == 0:  # 字典为空，返回值为{}，只有一页
         commit_count = len(commit_info)
-    else: # 大于一页，获取页数
+    else:  # 大于一页，获取页数
         last_str = commit_request.links['last']['url']
-        per_page = int(re.search('per_page=[0-9]+',last_str).group()[9:])
-        last_page = int(re.search('[^a-z_]page=[0-9]+',last_str).group()[6:])
+        per_page = int(re.search('per_page=[0-9]+', last_str).group()[9:])
+        last_page = int(re.search('[^a-z_]page=[0-9]+', last_str).group()[6:])
         # 请求最后一个page
         try:
-            last_request = requests.get(url=commit_url+"?page="+str(last_page), headers=headers, timeout=5, params=param)
+            last_request = requests.get(url=commit_url + "?page=" + str(last_page), headers=headers, timeout=5,
+                                        params=param)
         except requests.exceptions.ReadTimeout:
             raise
         if not last_request.ok:
             raise requests.exceptions.HTTPError
         last_info = json.loads(last_request.content)
         commit_count = len(last_info)
-        commit_count += per_page * (last_page-1)
+        commit_count += per_page * (last_page - 1)
     return commit_count
+
 
 if __name__ == '__main__':
     app.run('0.0.0.0', port=5000, debug=True)
