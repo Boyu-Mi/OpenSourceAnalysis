@@ -22,17 +22,18 @@
 
 - 基础的 issue，pullrequest 数据获取
 - 拟定与设计相关的关键词，如 fix, add, remove 之类的词
+- 可以直接获取label 为 **feature** 的issue
 - 指定时间范围内 issues 的 Open 和 Closed 数量，按时间排序
     - 可以指定计数最小时间单位
 - 指定时间范围内 pull requests 不同状态的数量（例如 Open 的数量、Closed 的数量等），按时间排序
     - 可以指定计数最小时间单位
-- 对 issues 和 pull requests 用上面提到的**设计相关关键词**进行过滤，收集其具体内容
+- 对 issues 和 pull requests 用上面提到的设计相关关键词进行过滤，收集其具体内容
 
 # Pytorch
 
 ## 对 Pytorch 项目的 stargazer, committer, issue 人数的 company 信息进⾏数据可视化
-
-- 分别统计这三种角色所属公司的人数，返回排序结果
+stargazer: https://api.github.com/repos/pytorch/pytorch/stargazers "organizations_url"
+- 分别统计这三种角色所属公司的人数 https://api.github.com/users/suo/orgs，返回排序结果
 - repos, commits 和 issues pull requests 的展示调用上面的接口
 
 ## 项目之间对比
