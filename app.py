@@ -8,7 +8,7 @@ import calendar
 import os
 from sqlalchemy.sql import and_, or_
 from flask_cors import CORS
-
+import ast
 from model import db
 from model import *
 import re
@@ -42,7 +42,7 @@ def commit():
     :return:
     """
     # get prams from request
-    data = request.json
+    data = eval(request.get_data())  # dangerous!!!!!
     url = data.get('url')
     # url = url.strip('/')
     if url is None:
@@ -180,7 +180,7 @@ def contributors():
     ...
     ]
     """
-    data = request.json
+    data = eval(request.get_data())
     url = data.get('url')
     is_update = data.get('update')
     url = url.strip('/')
