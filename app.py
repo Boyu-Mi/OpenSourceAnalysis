@@ -236,7 +236,7 @@ def contributors():
 @app.route('/user/', methods=['GET', 'POST'])
 def user():
     # 获取某个用户的信息，包括organization，company
-    db.create_all()  # 新建数据库
+    # db.create_all()  # 新建数据库
     data = request.json
     user_name = data.get("user_name")
     if user_name is None:  # 没输入用户名
@@ -315,10 +315,10 @@ def user():
 总共就1页, 在那一页:(无last)
 {}
 '''
-@app.route('/commit_by_time/', methods=['GET', 'POST'])
+@app.route('/commit_in_range/', methods=['GET', 'POST'])
 def commit_by_time():
     # 返回: total_commit 按时间的commit数, 默认起止年月日，输入允许为空（不传对应参数即可。）
-    # db.create_all()  # 新建数据库
+    db.create_all()  # 新建数据库
     data = request.json
     year_from = data.get("year_from") # 都是整数
     year_to = data.get("year_to")
@@ -336,28 +336,29 @@ def commit_by_time():
                }, 404
     # process the url
     u_list = url.split('/')
-    commit_url = 'https://api.github.com/repos/' + u_list[-2] + '/' + u_list[-1] + '/commits'  # the url to get commit info
-    
+    # 这段代码不知道当初为什么写，现在发现好像没用
+    # commit_url = 'https://api.github.com/repos/' + u_list[-2] + '/' + u_list[-1] + '/commits'  # the url to get commit info
+    # try:
+    #     api_request = requests.get(url=commit_url, headers=headers, timeout=5)
+    # except requests.exceptions.ReadTimeout:
+    #     # timeout exception(max time is 5s)
+    #     return {
+    #                "success": False,
+    #                "message": "Timeout!"
+    #            }, 404
+    # if not api_request.ok:
+    #     # invalid result
+    #     return {
+    #                "success": False,
+    #                "message": "Fail to get info!"
+    #            }, 404
     # handle exceptions while getting commit info
     if 'github.com' not in u_list:
         return {
                    "success": False,
                    "message": "Invalid github repo ink!"
                }, 404
-    try:
-        api_request = requests.get(url=commit_url, headers=headers, timeout=5)
-    except requests.exceptions.ReadTimeout:
-        # timeout exception(max time is 5s)
-        return {
-                   "success": False,
-                   "message": "Timeout!"
-               }, 404
-    if not api_request.ok:
-        # invalid result
-        return {
-                   "success": False,
-                   "message": "Fail to get info!"
-               }, 404
+    
     try:
         date_from, date_to = get_complete_date(time_unit,year_from,year_to,month_from,month_to,day_from,day_to)
     except ValueError:
@@ -371,7 +372,7 @@ def commit_by_time():
                     "message": "Time unit invalid!"
                 }, 404
     try:
-        commit_count_by_time = get_commit_by_time(date_from,date_to,u_list)
+        commit_count_by_time = get_commit_in_range(date_from,date_to,u_list)
     except requests.exceptions.ReadTimeout:
         return {
                    "success": False,
@@ -389,7 +390,7 @@ def commit_by_time():
     
     date_all_from, date_all_to = get_complete_date("year",None,None,None,None,None,None)
     try:
-        commit_count_total = get_commit_by_time(date_all_from,date_all_to,u_list)
+        commit_count_total = get_commit_in_range(date_all_from,date_all_to,u_list)
     except requests.exceptions.ReadTimeout:
         return {
                    "success": False,
@@ -453,8 +454,8 @@ def get_complete_date(time_unit,year_from,year_to,month_from,month_to,day_from,d
     date_to = date_to.strftime("%Y-%m-%dT%H:%M:%SZ")
     return (date_from,date_to)
 
-def get_commit_by_time(date_from,date_to,u_list):
-    param = {"per_page":100, "since":date_from, "until":date_to} # 按时间获取请求的参数
+def get_commit_in_range(date_from,date_to,u_list):
+    param = {"per_page":1, "since":date_from, "until":date_to} # 按时间获取请求的参数
     #获取commit数据
     commit_url = 'https://api.github.com/repos/' + u_list[-2]+'/'+u_list[-1] + '/commits'
     try:
@@ -465,21 +466,22 @@ def get_commit_by_time(date_from,date_to,u_list):
         raise requests.exceptions.HTTPError
     commit_info = json.loads(commit_request.content)
     if len(commit_request.links) == 0: # 字典为空，返回值为{}，只有一页
-        commit_count = len(commit_info)
+        commit_count = len(commit_info)  # 应为1
     else: # 大于一页，获取页数
         last_str = commit_request.links['last']['url']
-        per_page = int(re.search('per_page=[0-9]+',last_str).group()[9:])
+        # per_page = int(re.search('per_page=[0-9]+',last_str).group()[9:])
         last_page = int(re.search('[^a-z_]page=[0-9]+',last_str).group()[6:])
-        # 请求最后一个page
-        try:
-            last_request = requests.get(url=commit_url+"?page="+str(last_page), headers=headers, timeout=5, params=param)
-        except requests.exceptions.ReadTimeout:
-            raise
-        if not last_request.ok:
-            raise requests.exceptions.HTTPError
-        last_info = json.loads(last_request.content)
-        commit_count = len(last_info)
-        commit_count += per_page * (last_page-1)
+        # # 请求最后一个page
+        # try:
+        #     last_request = requests.get(url=commit_url+"?page="+str(last_page), headers=headers, timeout=5, params=param)
+        # except requests.exceptions.ReadTimeout:
+        #     raise
+        # if not last_request.ok:
+        #     raise requests.exceptions.HTTPError
+        # last_info = json.loads(last_request.content)
+        # commit_count = len(last_info)
+        # commit_count += per_page * (last_page-1)
+        commit_count = last_page
     return commit_count
 
 if __name__ == '__main__':
