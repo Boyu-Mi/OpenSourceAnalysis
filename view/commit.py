@@ -3,13 +3,13 @@ import requests
 import json
 from datetime import datetime, timedelta
 from model import *
-def get_commit_from_remote(url):
+def getRemoteCommit(url):
     """
     从远端查询仓库的提交信息
     :param url: 仓库地址
     :return:
     """
-
+    u_list = url.split('/')
     api = getApiUrl(url, 'commits')
     api_request = requests.get(url=api)
     owner_name, repo_name = getRepoInfo(url)
@@ -42,18 +42,67 @@ def get_commit_from_remote(url):
                             )
                 )
 
-                # 获取并插入时间，对字符串处理一下存进数据库
-                date1 = datetime.strptime(committer['commit']['author']['date'][0:10]
-                                          + ""
+                date1 = datetime.strptime(committer['commit']['author']['date'][0:10] + ""
                                           + committer['commit']['author']['date'][11:19],
                                           "%Y-%m-%d%H:%M:%S")
                 # db.session.add(
                 db.session.merge(
-                    date01(id=committer_id,
-                           repo_name=owner_name,
-                           date_newest=date1,
-                           date_local=datetime.now(),
-                           date_lasttime=date1
-                           )
+                    date01(id=id, repo_name=u_list[-1], date_newest=date1, date_local=datetime.now(),
+                           date_lasttime=date1)
                 )
+
+            sorted_date = sorted(date_list, reverse=True)
+            date_newest = sorted_date[0]
+            for committer in contents:
+                if committer.get('author') is None or committer.get('author').get('login') is None:
+                    #  bug-fixed: 删除文件的记录也会在api_ret中，且其author为null，应该舍去
+                    continue
+                key = committer.get('author').get('login')
+                if committers.get(key) is None:
+                    committers[key] = 1
+                else:
+                    committers[key] += 1
+
+            sorted_dict = sorted(committers.items(), key=lambda kv: (kv[1], kv[0]),
+                                 reverse=True)  # 按(kv[1], kv[0])降序排序
+            target = u_list[3] + '/' + u_list[4]
+
+            commit_users = []
+            for i in range(0, len(sorted_dict)):
+                if sorted_dict[i]:
+                    commit_url = 'https://github.com/' + sorted_dict[i][0]
+                    api_request = requests.get('https://api.github.com/users/' + sorted_dict[i][0])
+                    user_info = json.loads(api_request.content)
+                    avatar_url_1 = user_info['avatar_url']
+                    commit_users.append({"user": sorted_dict[i][0], "url": commit_url, "a_url": avatar_url_1})
+            db.session.commit()
+            return {"success": True,
+                    "message": "success!",
+                    "target": target,
+                    "id": content_id,
+                    "url": url,
+                    "owner": owner,
+                    "avatar_url": avatar_url,
+                    "html_url": html_url,
+                    "description": description,
+                    "topics": topics,
+                    "stargazers_count": stargazers_count,
+                    "created_at": created_at,
+                    "commit_users": commit_users,
+                    "date_newest": date_newest,
+                    "forks_count": forks_count,
+                    "watchers_count": watchers_count
+                    }, 200
+
+    else:
+        return {
+            "success": False,
+            "message": "Fail"
+        }, 404
+
+def getLocalCommit(url):
+    owner_name, repo_name = getRepoInfo(url)
+    return None #to be added
+
+
 
