@@ -1,7 +1,7 @@
 # 设置连接数据库的URL
 user = 'root'
-password = 'huhuijingroot'
-database = 'test'
+password = ''
+database = 'backend_try'
 SQLALCHEMY_DATABASE_URI = 'mysql://%s:%s@127.0.0.1:3306/%s' % (user,password,database)
 
 # 设置sqlalchemy自动跟踪数据库

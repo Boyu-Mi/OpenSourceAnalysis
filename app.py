@@ -6,6 +6,9 @@ import config
 from datetime import datetime, timedelta
 import calendar
 import os
+from sqlalchemy.sql import and_, or_
+from flask_cors import CORS
+
 from model import db
 from model import *
 import re
@@ -19,7 +22,7 @@ basedir = os.path.abspath(app.root_path)
 # app.config['SQLALCHEMY_ECHO'] = True  # 显示原始SQL语句
 app.config.from_object(config)  # 读取配置
 db.init_app(app)
-cors = CORS(app, supports_credentials=True)  #支持跨域
+cors = CORS(app, supports_credentials=True)  # 支持跨域
 
 headers = {}
 try:
@@ -41,7 +44,7 @@ def commit():
     # get prams from request
     data = request.json
     url = data.get('url')
-    url = url.strip('/')
+    # url = url.strip('/')
     if url is None:
         return {
                    "success": False,
@@ -166,7 +169,7 @@ def commit():
                 }, 200
 
 
-@app.route('/contributors/', methods=['GET', 'POST'])
+@app.route('/contributors/all', methods=['GET', 'POST'])
 def contributors():
     """
     返回仓库的贡献者
@@ -179,14 +182,37 @@ def contributors():
     """
     data = request.json
     url = data.get('url')
+    is_update = data.get('update')
     url = url.strip('/')
     if url is None:
         return {
                    "success": False,
                    "message": "No url!"
                }, 404
-    threshold = 0.2
+
     u_list = url.split('/')
+
+    if not is_update:
+        # 不需要更新，直接从数据库查询
+        repo_name = u_list[-1]
+        ret_con_list = []
+        contributors_list = db.session.query(Contributors).filter_by(repo_name=repo_name).all()
+        if not contributors_list:
+            return {
+                       "success": False,
+                       "message": "cannot get contribution info, please check the database"
+                   }, 404
+
+        for Contributor in contributors_list:
+            ret_con_list.append((
+                Contributor.con_name, Contributor.con_num
+            ))
+        return {
+                   "success": True,
+                   "message": "success!",
+                   "content": json.dumps(ret_con_list)
+               }, 200
+
     contributor_url = 'https://api.github.com/repos/' + u_list[-2] + '/' + u_list[-1] + '/contributors'
     repo_info_url = 'https://api.github.com/repos/' + u_list[-2] + '/' + u_list[-1]
     # handle exceptions while getting commit info
@@ -219,18 +245,63 @@ def contributors():
             contributors_list.append(
                 (item['login'], item['contributions'])
             )
-            db.session.merge(
-                Contributors(
-                    owner_name=repo_info['owner']['login'],
-                    repo_name=repo_info['name'],
-                    con_name=item['login'],
-                    con_num=item['contributions']
+            if db.session.query(Contributors).filter_by(repo_name=repo_info['name'], con_name=item['login']).all():
+                # 数据库中已经存在该仓库中该贡献者的信息
+                db.session.query(Contributors).filter_by(repo_name=repo_info['name'], con_name=item['login']).update(
+                    # 该仓库，该贡献者的贡献数量
+                    {Contributors.con_num: item['contributions']}
                 )
-            )
+            else:
+                # 数据库中不存在该仓库中该贡献者的信息，则添加该仓库，该贡献者的贡献数据
+                db.session.add(
+                    Contributors(
+                        owner_name=repo_info['owner']['login'],
+                        repo_name=repo_info['name'],
+                        con_name=item['login'],
+                        con_num=item['contributions']
+                    )
+                )
         db.session.commit()
-        return {"success": True,
-                "message": "success!"
-                }, 200
+        return {
+                   "success": True,
+                   "message": "success!",
+                   "content": json.dumps(contributors_list)
+               }, 200
+    else:
+        return {
+                   "success": False,
+                   "message": "cannot get contribution info"
+               }, 404
+
+
+@app.route('/contributors/core', methods=['GET', 'POST'])
+def core_contributors():
+    """
+    返回仓库的核心贡献者
+    :return:
+    [
+    (contributor1.id, contributor1.number_of_contributions),
+    (contributor2.id, contributor2.number_of_contributions),
+    ...
+    ]
+    """
+    data = request.json
+    url = data.get('url')
+    is_update = data.get('update')
+    threshold = 0.2
+    res = requests.post(url='http://127.0.0.1:5000/contributors/all', json={"url": url, "update": is_update})
+    if res is None or not json.loads(res.content).get('success'):
+        return {
+                   "success": False,
+                   "message": "failed to get contributor info."
+               }, 404
+    contributor_lst = eval(json.loads(res.content).get('content'))
+    slice_len = int(max(len(contributor_lst) * threshold, 1))
+    return {
+                   "success": True,
+                   "message": "success!",
+                   "content": json.dumps(contributor_lst[:slice_len])
+               }, 200
 
 
 @app.route('/user/', methods=['GET', 'POST'])
@@ -270,8 +341,8 @@ def user():
     ret["company"] = user_info["company"]
     ret["public_repo_number"] = user_info["public_repos"]
     ret["follower_number"] = user_info["followers"]
-    ret["created_at"] = user_info["created_at"][0:10]+' '+user_info["created_at"][11:19]
-    ret["updated_at"] = user_info["updated_at"][0:10]+' '+user_info["updated_at"][11:19]
+    ret["created_at"] = user_info["created_at"][0:10] + ' ' + user_info["created_at"][11:19]
+    ret["updated_at"] = user_info["updated_at"][0:10] + ' ' + user_info["updated_at"][11:19]
     time = datetime.now()
     timestr = time.strftime("%Y-%m-%d %H:%M:%S")
     ret["time"] = timestr
@@ -320,7 +391,7 @@ def commit_by_time():
     # 返回: total_commit 按时间的commit数, 默认起止年月日，输入允许为空（不传对应参数即可。）
     db.create_all()  # 新建数据库
     data = request.json
-    year_from = data.get("year_from") # 都是整数
+    year_from = data.get("year_from")  # 都是整数
     year_to = data.get("year_to")
     month_from = data.get("month_from")
     month_to = data.get("month_to")
@@ -360,17 +431,17 @@ def commit_by_time():
                }, 404
     
     try:
-        date_from, date_to = get_complete_date(time_unit,year_from,year_to,month_from,month_to,day_from,day_to)
+        date_from, date_to = get_complete_date(time_unit, year_from, year_to, month_from, month_to, day_from, day_to)
     except ValueError:
         return {
-                    "success": False,
-                    "message": "Date out of range!"
-                }, 404
+                   "success": False,
+                   "message": "Date out of range!"
+               }, 404
     except TypeError:
         return {
-                    "success": False,
-                    "message": "Time unit invalid!"
-                }, 404
+                   "success": False,
+                   "message": "Time unit invalid!"
+               }, 404
     try:
         commit_count_by_time = get_commit_in_range(date_from,date_to,u_list)
     except requests.exceptions.ReadTimeout:
@@ -387,8 +458,8 @@ def commit_by_time():
     ret["repo_name"] = u_list[-1]
     ret["owner_name"] = u_list[-2]
     ret["commit_count_by_time"] = commit_count_by_time
-    
-    date_all_from, date_all_to = get_complete_date("year",None,None,None,None,None,None)
+
+    date_all_from, date_all_to = get_complete_date("year", None, None, None, None, None, None)
     try:
         commit_count_total = get_commit_in_range(date_all_from,date_all_to,u_list)
     except requests.exceptions.ReadTimeout:
@@ -405,24 +476,25 @@ def commit_by_time():
     time = datetime.now()
     timestr = time.strftime("%Y-%m-%d %H:%M:%S")
     ret["time"] = timestr
-    
+
     # 存储到数据库
     db.session.merge(
-        Commit_count(repo_name=u_list[-1],owner_name=u_list[-2],
-        commit_total=commit_count_total,commit_by_time=commit_count_by_time,
-        date_from=datetime.strptime(date_from,"%Y-%m-%dT%H:%M:%SZ"),
-        date_to=datetime.strptime(date_to,"%Y-%m-%dT%H:%M:%SZ"),
-        time=time)
+        Commit_count(repo_name=u_list[-1], owner_name=u_list[-2],
+                     commit_total=commit_count_total, commit_by_time=commit_count_by_time,
+                     date_from=datetime.strptime(date_from, "%Y-%m-%dT%H:%M:%SZ"),
+                     date_to=datetime.strptime(date_to, "%Y-%m-%dT%H:%M:%SZ"),
+                     time=time)
     )
     db.session.commit()
-    
+
     return ret, 200
 
-def get_complete_date(time_unit,year_from,year_to,month_from,month_to,day_from,day_to):
-    try: #判断日期合法性
+
+def get_complete_date(time_unit, year_from, year_to, month_from, month_to, day_from, day_to):
+    try:  # 判断日期合法性
         # 处理空值
         if year_from is None:
-                year_from = 2000 # github创建时间2008
+            year_from = 2000  # github创建时间2008
         if year_to is None:
             year_to = datetime.today().year
         if month_from is None:
@@ -432,25 +504,25 @@ def get_complete_date(time_unit,year_from,year_to,month_from,month_to,day_from,d
         if day_from is None:
             day_from = 1
         if day_to is None:
-            weekday,day_to = calendar.monthrange(year_to,month_to)
+            weekday, day_to = calendar.monthrange(year_to, month_to)
         if time_unit == "year":
-            date_from = datetime(year_from,1,1,0,0,0)
-            date_to = datetime(year_to+1,1,1,0,0,0)
+            date_from = datetime(year_from, 1, 1, 0, 0, 0)
+            date_to = datetime(year_to + 1, 1, 1, 0, 0, 0)
         elif time_unit == "month":
-            date_from = datetime(year_from,month_from,1,0,0,0)
-            
+            date_from = datetime(year_from, month_from, 1, 0, 0, 0)
+
             if month_to == 12:
                 year_to += 1
                 month_to = 1
-            date_to = datetime(year_to,month_to,1,0,0,0)
+            date_to = datetime(year_to, month_to, 1, 0, 0, 0)
         elif time_unit == "day":
-            date_from = datetime(year_from,month_from,day_from,0,0,0)
-            date_to = datetime(year_to,month_to,day_to,0,0,0)+timedelta(days=1)
+            date_from = datetime(year_from, month_from, day_from, 0, 0, 0)
+            date_to = datetime(year_to, month_to, day_to, 0, 0, 0) + timedelta(days=1)
         else:
             raise TypeError
     except ValueError:
         raise
-    date_from =date_from.strftime("%Y-%m-%dT%H:%M:%SZ")
+    date_from = date_from.strftime("%Y-%m-%dT%H:%M:%SZ")
     date_to = date_to.strftime("%Y-%m-%dT%H:%M:%SZ")
     return (date_from,date_to)
 

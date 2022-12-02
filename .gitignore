@@ -1,6 +1,8 @@
-venv
-token
+.idea
 Project2
+venv
 __pycache__
 out.json
 out1.json
+requirements.txt
+token
