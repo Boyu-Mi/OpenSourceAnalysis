@@ -1,14 +1,12 @@
 import sqlalchemy as sa
 from flask_sqlalchemy import SQLAlchemy
 import pymysql
+
 pymysql.install_as_MySQLdb()
 db = SQLAlchemy()
 
 
 class Contributors(db.Model):
-    # id = sa.Column(sa.Integer, autoincrement=True,
-    #                primary_key=True,
-    #                nullable=False)
     id = sa.Column(sa.Integer,
                    primary_key=True,
                    nullable=False)
@@ -19,10 +17,6 @@ class Contributors(db.Model):
 
 
 class Commits(db.Model):
-    # id = sa.Column(sa.Integer, autoincrement=True,
-    #                primary_key=True,
-    #                nullable=False)
-    # id为commit的sha值，为了防止越界直接用字符串表示，作为主键唯一标识一次commit
     id = sa.Column(sa.String(40),
                    primary_key=True,
                    nullable=False)
@@ -32,9 +26,6 @@ class Commits(db.Model):
 
 
 class date01(db.Model):
-    # id = sa.Column(sa.Integer, autoincrement=True,
-    #                primary_key=True,
-    #                nullable=False)
     id = sa.Column(sa.String(40),
                    primary_key=True,
                    nullable=False)
@@ -42,6 +33,7 @@ class date01(db.Model):
     date_newest = sa.Column(sa.DateTime)
     date_local = sa.Column(sa.DateTime)  # 目前还不知道自动设置更新时间的方法
     date_lasttime = sa.Column(sa.DateTime)
+
 
 class User(db.Model):
     id = sa.Column(sa.Integer, primary_key=True,
@@ -57,9 +49,10 @@ class User(db.Model):
     public_repo_number = sa.Column(sa.Integer, nullable=False, default=0)
     time = sa.Column(sa.DateTime)
 
+
 class Commit_count(db.Model):
-    repo_name = sa.Column(sa.String(128), primary_key=True, nullable=False, default='') #联合主键
-    owner_name = sa.Column(sa.String(128), primary_key=True, nullable=False, default='') #联合主键
-    timeline = sa.Column(sa.DateTime, primary_key=True) #联合主键
-    commit_count = sa.Column(sa.Integer, nullable=False, default=0) #该日子下的commit数
-    time = sa.Column(sa.DateTime) #数据库更新时间
+    repo_name = sa.Column(sa.String(128), primary_key=True, nullable=False, default='')  # 联合主键
+    owner_name = sa.Column(sa.String(128), primary_key=True, nullable=False, default='')  # 联合主键
+    timeline = sa.Column(sa.DateTime, primary_key=True)  # 联合主键
+    commit_count = sa.Column(sa.Integer, nullable=False, default=0)  # 该日子下的commit数
+    time = sa.Column(sa.DateTime)  # 数据库更新时间

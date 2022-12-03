@@ -1,8 +1,20 @@
 from general import *
 import requests
 import json
-from datetime import datetime, timedelta
+from datetime import datetime
+from flask import Blueprint, request
 from model import *
+
+blueprint = Blueprint("commits", __name__)
+
+
+@blueprint.route('/commits', methods=['GET', 'POST'])
+def updateCommit():
+    data = eval(request.get_data())  # dangerous!!!!!
+    url = data.get('url')
+    return getRemoteCommit(url)
+
+
 def getRemoteCommit(url):
     """
     从远端查询仓库的提交信息
@@ -10,7 +22,7 @@ def getRemoteCommit(url):
     :return:
     """
     u_list = url.split('/')
-    api = getApiUrl(url, 'commits')
+    api = getApiUrl(url, '')[:-1]
     api_request = requests.get(url=api)
     owner_name, repo_name = getRepoInfo(url)
     if api_request.ok:
@@ -28,6 +40,9 @@ def getRemoteCommit(url):
             watchers_count = contents['watchers_count']
             committers = {}
             date_list = []
+            api = getApiUrl(url, 'commits')
+            api_request = requests.get(url=api)
+            contents = json.loads(api_request.content)
             for committer in contents:
                 committer_id = committer["sha"]
                 date_it = committer['commit']['author']['date']
@@ -96,13 +111,11 @@ def getRemoteCommit(url):
 
     else:
         return {
-            "success": False,
-            "message": "Fail"
-        }, 404
+                   "success": False,
+                   "message": "Fail"
+               }, 404
+
 
 def getLocalCommit(url):
     owner_name, repo_name = getRepoInfo(url)
-    return None #to be added
-
-
-
+    return None  # to be added

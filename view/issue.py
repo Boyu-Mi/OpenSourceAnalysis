@@ -1,11 +1,25 @@
 import requests
 import json
-from general import *
+from flask import Blueprint, request
+from general import getApiUrl
+
+blueprint = Blueprint("issues", __name__)
+
+
+@blueprint.route('/issues', methods=['GET', 'POST'])
+def issues():
+    data = eval(request.get_data())  # dangerous!!!!!
+    url = data.get('url')
+    return get_issues(url)
+
 
 def get_issues(url):
     """
     获取某个仓库的所有issue
-    :return: issue list
+    :return: [{
+        "body": "### 🐛 Describe the bug\n\nTo be filled out, realized this as I was falling asleep. \n\n### Versions\n\nNo",
+        "title": "AOTAutograd input dedup needs a strategy for fake tensor args"
+        }]
     """
     param = {
         "per_page": 100,  # get 100 issues per page
@@ -16,6 +30,7 @@ def get_issues(url):
     issue_url = getApiUrl(url, 'issues')
     issue_request = requests.get(url=issue_url, params=param)
     issues_of_this_page = json.loads(issue_request.content)
+
     for issue in issues_of_this_page:
         if issue['body'] is not None:
             issues.append(
@@ -24,11 +39,12 @@ def get_issues(url):
                     "body": issue['body']  # body of the issue
                 }
             )
-    return issues
+    return issues, 200
+
 
 def textForCloud(url):
     res = ''
-    issues = get_issues(url)
-    for issue in issues:
+    issues_ = get_issues(url)
+    for issue in issues_:
         res += issue["title"]
     return res
