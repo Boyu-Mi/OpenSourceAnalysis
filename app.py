@@ -13,14 +13,16 @@ from flask_cors import CORS
 
 from model import db
 from model import *
-import update, user, commit_by_time
+import update, user, commit_by_time, company
 
 app = Flask(__name__)
+
 
 # 注册蓝图
 app.register_blueprint(update.blueprint,url_prefix='/')
 app.register_blueprint(user.blueprint,url_prefix='/')
 app.register_blueprint(commit_by_time.blueprint,url_prefix='/')
+app.register_blueprint(company.blueprint,url_prefix='/')
 
 basedir = os.path.abspath(app.root_path)
 # config databases

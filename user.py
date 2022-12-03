@@ -3,6 +3,7 @@ from flask import Blueprint,request
 from datetime import datetime
 from model import *
 from decorators import decorator_user
+import re
 
 blueprint = Blueprint("user", __name__)
 
@@ -39,7 +40,18 @@ def update_user(name,data={}):
     ret["avatar_url"] = user_info["avatar_url"]
     ret["user_url"] = user_info["html_url"]
     ret["user_type"] = user_info["type"]  # Organization,User等
-    ret["company"] = user_info["company"]
+    company = user_info["company"]
+    if company is None:
+        company = ""
+    company = re.search("(\\w| )+",company)
+    if company is None:
+        company = ""
+    else:
+        company = company.group()
+    company = re.sub("\\s*$","",company) #去掉左右两侧空格
+    company = re.sub("^\\s*","",company)
+    company = company.lower()
+    ret["company"] = company
     ret["public_repo_number"] = user_info["public_repos"]
     ret["follower_number"] = user_info["followers"]
     ret["created_at"] = user_info["created_at"][0:10] + ' ' + user_info["created_at"][11:19]
