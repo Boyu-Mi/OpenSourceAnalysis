@@ -6,3 +6,6 @@ out.json
 out1.json
 requirements.txt
 token
+frontend
+config.py
+appnew.py

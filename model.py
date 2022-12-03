@@ -44,13 +44,13 @@ class date01(db.Model):
     date_lasttime = sa.Column(sa.DateTime)
 
 class User(db.Model):
-    id = sa.Column(sa.Integer, autoincrement=True,
-                   primary_key=True,
+    id = sa.Column(sa.Integer, primary_key=True,
                    nullable=False)
     user_type = sa.Column(sa.String(50), nullable=False, default='')
-    name = sa.Column(sa.String(128), nullable=False, default='')
+    user_name = sa.Column(sa.String(128), nullable=False, default='')
     company = sa.Column(sa.String(128), nullable=True, default='')
     avatar_url = sa.Column(sa.String(128), nullable=True, default='')
+    user_url = sa.Column(sa.String(128), nullable=True, default='')
     created_at = sa.Column(sa.DateTime)
     updated_at = sa.Column(sa.DateTime)
     follower_number = sa.Column(sa.Integer, nullable=False, default=0)
@@ -59,9 +59,7 @@ class User(db.Model):
 
 class Commit_count(db.Model):
     repo_name = sa.Column(sa.String(128), primary_key=True, nullable=False, default='') #联合主键
-    owner_name = sa.Column(sa.String(128), primary_key=True, nullable=False, default='')
-    commit_total = sa.Column(sa.Integer, nullable=False, default=0)
-    date_from = sa.Column(sa.DateTime, primary_key=True)
-    date_to = sa.Column(sa.DateTime, primary_key=True)
-    commit_by_time = sa.Column(sa.Integer, nullable=False, default=0)
-    time = sa.Column(sa.DateTime)
+    owner_name = sa.Column(sa.String(128), primary_key=True, nullable=False, default='') #联合主键
+    timeline = sa.Column(sa.DateTime, primary_key=True) #联合主键
+    commit_count = sa.Column(sa.Integer, nullable=False, default=0) #该日子下的commit数
+    time = sa.Column(sa.DateTime) #数据库更新时间
