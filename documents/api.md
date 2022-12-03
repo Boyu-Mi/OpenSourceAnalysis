@@ -83,7 +83,7 @@ follower_number, id, public_repo_number为整型，success为bool，其他都是
     }, 200
 ```
 
-### @app.route('/commit_by_time/', methods=['GET', 'POST'])
+### @app.route('/commit_in_range/', methods=['GET', 'POST'])
 def commit_from(request):
 #### request body
 
