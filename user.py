@@ -1,4 +1,4 @@
-from flask import Blueprint,request
+from flask import Blueprint, request
 
 from datetime import datetime
 from model import *
@@ -8,31 +8,26 @@ import re
 blueprint = Blueprint("user", __name__)
 
 
-
 # 获取某个用户的信息，包括organization，company(user只用单个请求，比较快，就不存数据库了)
 @blueprint.route('/get_user/<name>/', methods=['GET', 'POST'])
 def user(name):
     result = db.session.query(User).filter_by(user_name=name).first()
-    if(result is None):
+    if result is None:
         return update_user(name)
     ret = {}
     user_name = name
-    ret = {"success": True, "message": "success!", "user_name": user_name}
-    ret["id"] = result.id
-    ret["avatar_url"] = result.avatar_url
-    ret["user_url"] = result.user_url
-    ret["user_type"] = result.user_type
-    ret["company"] = result.company
-    ret["public_repo_number"] = result.public_repo_number
-    ret["follower_number"] = result.follower_number
-    ret["created_at"] = result.created_at
-    ret["updated_at"] = result.updated_at
-    ret["time"] = result.time
+    ret = {"success": True, "message": "success!", "user_name": user_name, "id": result.id,
+           "avatar_url": result.avatar_url, "user_url": result.user_url, "user_type": result.user_type,
+           "company": result.company, "public_repo_number": result.public_repo_number,
+           "follower_number": result.follower_number, "created_at": result.created_at, "updated_at": result.updated_at,
+           "time": result.time}
     return ret, 200
 
 
 @decorator_user
-def update_user(name,data={}):
+def update_user(name, data=None):
+    if data is None:
+        data = {}
     user_name = name
     user_info = data
     ret = {"success": True, "message": "success!", "user_name": user_name}
@@ -68,8 +63,8 @@ def update_user(name,data={}):
     db.session.merge(
         User(id=ret["id"], user_type=ret["user_type"],
              user_name=user_name, company=ret["company"],
-             avatar_url=ret["avatar_url"],user_url=ret["user_url"], created_at=date_c, updated_at=date_u,
+             avatar_url=ret["avatar_url"], user_url=ret["user_url"], created_at=date_c, updated_at=date_u,
              follower_number=ret["follower_number"], public_repo_number=ret["public_repo_number"], time=time)
     )
     db.session.commit()
-    return  ret, 200
+    return ret, 200

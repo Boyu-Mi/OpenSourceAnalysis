@@ -1,17 +1,17 @@
-from flask import Flask, request, jsonify
-from flask_cors import CORS, cross_origin  # 处理跨域
-import requests
 import json
-import config
-from datetime import datetime, timedelta
-import cloud.cloud
-import random
-
 import os
-from sqlalchemy.sql import and_, or_
+import random
+from datetime import datetime
+
+import requests
+from flask import Flask, request
 from flask_cors import CORS
 
-from model import db
+import commit_by_time
+import config
+import update
+import user
+import view.view, view.commit, view.contributor, view.issue
 from model import *
 import update, user, commit_by_time, company
 
@@ -19,16 +19,15 @@ app = Flask(__name__)
 
 
 # 注册蓝图
-app.register_blueprint(update.blueprint,url_prefix='/')
-app.register_blueprint(user.blueprint,url_prefix='/')
-app.register_blueprint(commit_by_time.blueprint,url_prefix='/')
+app.register_blueprint(update.blueprint, url_prefix='/')
+app.register_blueprint(user.blueprint, url_prefix='/')
+app.register_blueprint(commit_by_time.blueprint, url_prefix='/')
+app.register_blueprint(view.issue.blueprint, url_prefix='/')
+app.register_blueprint(view.commit.blueprint, url_prefix='/')
+app.register_blueprint(view.contributor.blueprint, url_prefix='/')
 app.register_blueprint(company.blueprint,url_prefix='/')
 
 basedir = os.path.abspath(app.root_path)
-# config databases
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'data.db')
-# app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-# app.config['SQLALCHEMY_ECHO'] = True  # 显示原始SQL语句
 app.config.from_object(config)  # 读取配置
 db.init_app(app)
 cors = CORS(app, supports_credentials=True)  # 支持跨域
@@ -43,39 +42,44 @@ try:
 except FileNotFoundError:
     pass
 
+
 # 这里缺个转换
 def convert_url(url):
     array = url.split("A")
     new_url = ""
     for i in range(len(array) - 1):
-        new_url += chr(int(array[i+1]))
+        new_url += chr(int(array[i + 1]))
     return new_url
+
 
 @app.route("/cloud/<url>", methods=["GET"])
 def get_cloud_image(url):
     new_url = convert_url(url)
-    print( "--- Cloud url: " + new_url + "---")
+    print("--- Cloud url: " + new_url + "---")
 
     text = (open('cloud\\test_' + str(random.randint(0, 9)) + ".txt", "r", encoding='utf-8')).read()
+    return None
     # 单纯获取测试用的字符串，直接make然后返回就可以了
-    res = cloud.cloud.make_cloud_img(text, 3)
-    print(res[1])
-    return cloud.cloud.im_2_b64(res[0])
+    # res = cloud.cloud.make_cloud_img(text, 3)
+    # print(res[1])
+    # return cloud.cloud.im_2_b64(res[0])
+
 
 @app.route('/get_repo/', methods=['GET', 'POST'])
 def get_repo():
     data = request.json
     print(data)
     res = {
-            "id": config.num,
-            "name": "pytorch" + str(config.num),
-            "about": "About Tensors and Dynamic neural networks in Python with strong GPU acceleration",
-            "link": "https://github.com/pytorch/pytorch" + str(config.num)
-            }
+        "id": config.num,
+        "name": "pytorch" + str(config.num),
+        "about": "About Tensors and Dynamic neural networks in Python with strong GPU acceleration",
+        "link": "https://github.com/pytorch/pytorch" + str(config.num)
+    }
     config.num += 1
-    if(config.num >= 9):
+    if config.num >= 9:
         config.num = 1
-    return ({"content" : res}, 200)
+    return {"content": res}, 200
+
 
 @app.route('/commit/', methods=['GET', 'POST'])
 def commit():
@@ -84,7 +88,7 @@ def commit():
     :return:
     """
     # get prams from request
-    data = request.json
+    data = eval(request.get_data())  # dangerous!!!!!
     url = data.get('url')
     # url = url.strip('/')
     if url is None:
@@ -222,7 +226,7 @@ def contributors():
     ...
     ]
     """
-    data = request.json
+    data = eval(request.get_data())
     url = data.get('url')
     is_update = data.get('update')
     url = url.strip('/')
@@ -340,11 +344,10 @@ def core_contributors():
     contributor_lst = eval(json.loads(res.content).get('content'))
     slice_len = int(max(len(contributor_lst) * threshold, 1))
     return {
-                   "success": True,
-                   "message": "success!",
-                   "content": json.dumps(contributor_lst[:slice_len])
-               }, 200
-
+               "success": True,
+               "message": "success!",
+               "content": json.dumps(contributor_lst[:slice_len])
+           }, 200
 
 
 if __name__ == '__main__':
