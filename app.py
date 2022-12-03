@@ -14,6 +14,7 @@ import user
 import view.view, view.commit, view.contributor, view.issue
 from model import *
 import update, user, commit_by_time, company
+import cloud.cloud
 
 app = Flask(__name__)
 
@@ -55,14 +56,13 @@ def convert_url(url):
 @app.route("/cloud/<url>", methods=["GET"])
 def get_cloud_image(url):
     new_url = convert_url(url)
-    print("--- Cloud url: " + new_url + "---")
+    print( "--- Cloud url: " + new_url + "---")
 
     text = (open('cloud\\test_' + str(random.randint(0, 9)) + ".txt", "r", encoding='utf-8')).read()
-    return None
     # 单纯获取测试用的字符串，直接make然后返回就可以了
-    # res = cloud.cloud.make_cloud_img(text, 3)
-    # print(res[1])
-    # return cloud.cloud.im_2_b64(res[0])
+    res = cloud.cloud.make_cloud_img(text, 3)
+    print(res[1])
+    return cloud.cloud.im_2_b64(res[0])
 
 
 @app.route('/get_repo/', methods=['GET', 'POST'])

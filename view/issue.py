@@ -6,7 +6,7 @@ from general import getApiUrl
 blueprint = Blueprint("issues", __name__)
 
 
-@blueprint.route('/issues', methods=['GET', 'POST'])
+@blueprint.route('/issues/', methods=['GET', 'POST'])
 def issues():
     data = eval(request.get_data())  # dangerous!!!!!
     url = data.get('url')

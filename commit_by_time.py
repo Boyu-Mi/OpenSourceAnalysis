@@ -1,10 +1,6 @@
 from flask import Blueprint,request
-import requests
-import json
 from datetime import datetime, timedelta
 from model import *
-import calendar
-import re
 
 
 blueprint = Blueprint("commit_by_time", __name__)

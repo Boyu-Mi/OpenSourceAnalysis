@@ -7,14 +7,14 @@ from flask import Blueprint, request
 blueprint = Blueprint("contributors", __name__)
 
 
-@blueprint.route('/contributors/update', methods=['GET', 'POST'])
+@blueprint.route('/contributors/update/', methods=['GET', 'POST'])
 def updateContributors():
     data = eval(request.get_data())  # dangerous!!!!!
     url = data.get('url')
     return getRemoteContributor(url)
 
 
-@blueprint.route('/contributors/local', methods=['GET', 'POST'])
+@blueprint.route('/contributors/local/', methods=['GET', 'POST'])
 def getCoreContributors():
     data = eval(request.get_data())  # dangerous!!!!!
     url = data.get('url')
@@ -90,7 +90,7 @@ def getLocalContributor(url):
     return contributors_list, 200
 
 
-@blueprint.route('/contributors/core', methods=['GET', 'POST'])
+@blueprint.route('/contributors/core/', methods=['GET', 'POST'])
 def getCoreContributor():
     data = eval(request.get_data())  # dangerous!!!!!
     url = data.get('url')
