@@ -15,6 +15,7 @@ import view.view, view.commit, view.contributor, view.issue
 from model import *
 import update, user, commit_by_time, company
 import cloud.cloud
+from decorators import decorator_repo
 
 app = Flask(__name__)
 
@@ -66,18 +67,18 @@ def get_cloud_image(url):
 
 
 @app.route('/get_repo/', methods=['GET', 'POST'])
-def get_repo():
-    data = request.json
-    print(data)
+@decorator_repo
+def get_repo(u_list=None,data=None):
+    repo_name = u_list[-1]
+    owner_name = u_list[-2]
     res = {
         "id": config.num,
-        "name": "pytorch" + str(config.num),
-        "about": "About Tensors and Dynamic neural networks in Python with strong GPU acceleration",
-        "link": "https://github.com/pytorch/pytorch" + str(config.num)
+        "name": repo_name,
+        "owner": owner_name,
+        "about": data["description"],
+        "link": data["html_url"]
     }
     config.num += 1
-    if config.num >= 9:
-        config.num = 1
     return {"content": res}, 200
 
 
@@ -213,141 +214,6 @@ def commit():
                 "date_newest": date_newest, "forks_count": forks_count,
                 "watchers_count": watchers_count
                 }, 200
-
-
-@app.route('/contributors/all', methods=['GET', 'POST'])
-def contributors():
-    """
-    返回仓库的贡献者
-    :return:
-    [
-    (contributor1.id, contributor1.number_of_contributions),
-    (contributor2.id, contributor2.number_of_contributions),
-    ...
-    ]
-    """
-    data = eval(request.get_data())
-    url = data.get('url')
-    is_update = data.get('update')
-    url = url.strip('/')
-    if url is None:
-        return {
-                   "success": False,
-                   "message": "No url!"
-               }, 404
-
-    u_list = url.split('/')
-
-    if not is_update:
-        # 不需要更新，直接从数据库查询
-        repo_name = u_list[-1]
-        ret_con_list = []
-        contributors_list = db.session.query(Contributors).filter_by(repo_name=repo_name).all()
-        if not contributors_list:
-            return {
-                       "success": False,
-                       "message": "cannot get contribution info, please check the database"
-                   }, 404
-
-        for Contributor in contributors_list:
-            ret_con_list.append((
-                Contributor.con_name, Contributor.con_num
-            ))
-        return {
-                   "success": True,
-                   "message": "success!",
-                   "content": json.dumps(ret_con_list)
-               }, 200
-
-    contributor_url = 'https://api.github.com/repos/' + u_list[-2] + '/' + u_list[-1] + '/contributors'
-    repo_info_url = 'https://api.github.com/repos/' + u_list[-2] + '/' + u_list[-1]
-    # handle exceptions while getting commit info
-    if 'github.com' not in u_list:
-        return {
-                   "success": False,
-                   "message": "Invalid github repo ink!"
-               }, 404
-    try:
-        contributor_info_request = requests.get(url=contributor_url, headers=headers, timeout=5)
-        repo_info_request = requests.get(url=repo_info_url, headers=headers, timeout=5)
-    except requests.exceptions.ReadTimeout:
-        # timeout exception(max time is 5s)
-        return {
-                   "success": False,
-                   "message": "Timeout!"
-               }, 404
-    if not contributor_info_request.ok and not repo_info_request.ok:
-        # invalid result
-        return {
-                   "success": False,
-                   "message": "Fail to get info!"
-               }, 404
-
-    contribution_info = json.loads(contributor_info_request.content)
-    repo_info = json.loads(repo_info_request.content)
-    contributors_list = []
-    if contribution_info:
-        for item in contribution_info:
-            contributors_list.append(
-                (item['login'], item['contributions'])
-            )
-            if db.session.query(Contributors).filter_by(repo_name=repo_info['name'], con_name=item['login']).all():
-                # 数据库中已经存在该仓库中该贡献者的信息
-                db.session.query(Contributors).filter_by(repo_name=repo_info['name'], con_name=item['login']).update(
-                    # 该仓库，该贡献者的贡献数量
-                    {Contributors.con_num: item['contributions']}
-                )
-            else:
-                # 数据库中不存在该仓库中该贡献者的信息，则添加该仓库，该贡献者的贡献数据
-                db.session.add(
-                    Contributors(
-                        owner_name=repo_info['owner']['login'],
-                        repo_name=repo_info['name'],
-                        con_name=item['login'],
-                        con_num=item['contributions']
-                    )
-                )
-        db.session.commit()
-        return {
-                   "success": True,
-                   "message": "success!",
-                   "content": json.dumps(contributors_list)
-               }, 200
-    else:
-        return {
-                   "success": False,
-                   "message": "cannot get contribution info"
-               }, 404
-
-
-@app.route('/contributors/core', methods=['GET', 'POST'])
-def core_contributors():
-    """
-    返回仓库的核心贡献者
-    :return:
-    [
-    (contributor1.id, contributor1.number_of_contributions),
-    (contributor2.id, contributor2.number_of_contributions),
-    ...
-    ]
-    """
-    data = request.json
-    url = data.get('url')
-    is_update = data.get('update')
-    threshold = 0.2
-    res = requests.post(url='http://127.0.0.1:5000/contributors/all', json={"url": url, "update": is_update})
-    if res is None or not json.loads(res.content).get('success'):
-        return {
-                   "success": False,
-                   "message": "failed to get contributor info."
-               }, 404
-    contributor_lst = eval(json.loads(res.content).get('content'))
-    slice_len = int(max(len(contributor_lst) * threshold, 1))
-    return {
-               "success": True,
-               "message": "success!",
-               "content": json.dumps(contributor_lst[:slice_len])
-           }, 200
 
 
 if __name__ == '__main__':

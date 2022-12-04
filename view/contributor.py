@@ -14,9 +14,11 @@ def updateContributors():
     return getRemoteContributor(url)
 
 
-@blueprint.route('/contributors/local/', methods=['GET', 'POST'])
+@blueprint.route('/get_contributors/all/', methods=['GET', 'POST'])
 def getCoreContributors():
     data = eval(request.get_data())  # dangerous!!!!!
+    print("====================================")
+    print(data)
     url = data.get('url')
     return getLocalContributor(url)
 
@@ -87,13 +89,14 @@ def getLocalContributor(url):
             }
         )
 
-    return contributors_list, 200
+    return {"content":contributors_list}, 200
 
 
-@blueprint.route('/contributors/core/', methods=['GET', 'POST'])
+@blueprint.route('/get_contributors/core/', methods=['GET', 'POST'])
 def getCoreContributor():
     data = eval(request.get_data())  # dangerous!!!!!
     url = data.get('url')
     con_lst, _ = getLocalContributor(url)
+    con_lst = con_lst["content"]
     length = max(1, int(0.2 * len(con_lst)))
-    return con_lst[:length], 200
+    return {"content":con_lst[:length]}, 200
