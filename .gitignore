@@ -6,7 +6,6 @@ out.json
 out1.json
 requirements.txt
 token
-frontend
 frontend/node_modules
 config.py
 appnew.py
