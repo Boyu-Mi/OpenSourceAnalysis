@@ -5,6 +5,16 @@ from general import getApiUrl
 
 blueprint = Blueprint("issues", __name__)
 
+headers = {}
+try:
+    with open('token', 'r') as token_file:  # 本地有token文件，就用token，没有token就直接查询
+        token = token_file.readline()
+        headers = {
+            "Authorization": token
+        }
+except FileNotFoundError:
+    pass
+
 
 @blueprint.route('/issues/', methods=['GET', 'POST'])
 def issues():
@@ -28,7 +38,7 @@ def get_issues(url):
     }
     issues = []
     issue_url = getApiUrl(url, 'issues')
-    issue_request = requests.get(url=issue_url, params=param)
+    issue_request = requests.get(url=issue_url, params=param,headers=headers)
     issues_of_this_page = json.loads(issue_request.content)
 
     for issue in issues_of_this_page:
@@ -44,7 +54,7 @@ def get_issues(url):
 
 def textForCloud(url):
     res = ''
-    issues_ = get_issues(url)
+    issues_ = get_issues(url)[0]
     for issue in issues_:
         res += issue["title"]
     return res

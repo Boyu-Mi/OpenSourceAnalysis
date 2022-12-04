@@ -6,6 +6,15 @@ from flask import Blueprint, request
 
 blueprint = Blueprint("contributors", __name__)
 
+headers = {}
+try:
+    with open('token', 'r') as token_file:  # 本地有token文件，就用token，没有token就直接查询
+        token = token_file.readline()
+        headers = {
+            "Authorization": token
+        }
+except FileNotFoundError:
+    pass
 
 @blueprint.route('/contributors/update/', methods=['GET', 'POST'])
 def updateContributors():
@@ -17,8 +26,8 @@ def updateContributors():
 @blueprint.route('/get_contributors/all/', methods=['GET', 'POST'])
 def getCoreContributors():
     data = eval(request.get_data())  # dangerous!!!!!
-    print("====================================")
-    print(data)
+    # print("====================================")
+    # print(data)
     url = data.get('url')
     return getLocalContributor(url)
 
@@ -29,7 +38,7 @@ def getRemoteContributor(url):
     """
     contributor_url = getApiUrl(url, 'contributors')
     repo_info_url = getApiUrl(url, '')[:-1]
-    contributor_info_request = requests.get(url=contributor_url)
+    contributor_info_request = requests.get(url=contributor_url,headers=headers)
     repo_info_request = requests.get(url=repo_info_url)
     if not contributor_info_request.ok and not repo_info_request.ok:
         # invalid result
