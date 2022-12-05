@@ -63,3 +63,11 @@ class Commit_count(db.Model):
     timeline = sa.Column(sa.DateTime, primary_key=True) #联合主键
     commit_count = sa.Column(sa.Integer, nullable=False, default=0) #该日子下的commit数
     time = sa.Column(sa.DateTime) #数据库更新时间
+
+class Issue(db.Model):
+    repo_name = sa.Column(sa.String(128), primary_key=True, nullable=False, default='')  # 联合主键
+    owner_name = sa.Column(sa.String(128), primary_key=True, nullable=False, default='')  # 联合主键
+    id = sa.Column(sa.Integer, nullable=False)
+    title = sa.Column(sa.String, nullable=False, default='')
+    body = sa.Column(sa.String, nullable=False, default='')
+

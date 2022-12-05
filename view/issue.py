@@ -1,8 +1,8 @@
 import requests
 import json
 from general import *
-
-def get_issues(url):
+from model import *
+def getRemoteIssues(url):
     """
     获取某个仓库的所有issue
     :return: issue list
@@ -16,6 +16,7 @@ def get_issues(url):
     issue_url = getApiUrl(url, 'issues')
     issue_request = requests.get(url=issue_url, params=param)
     issues_of_this_page = json.loads(issue_request.content)
+    owner_name, repo_name = getRepoInfo(url)
     for issue in issues_of_this_page:
         if issue['body'] is not None:
             issues.append(
@@ -24,11 +25,23 @@ def get_issues(url):
                     "body": issue['body']  # body of the issue
                 }
             )
+        issue_id = issue['number']
+        db.session.merge(
+            Issue(owner_name=owner_name, repo_name=repo_name, id=issue_id, title=issue['title'], body=issue['body'])
+        )
+    db.session.commit()
     return issues
 
-def textForCloud(url):
-    res = ''
-    issues = get_issues(url)
-    for issue in issues:
-        res += issue["title"]
+
+def getLocalIssue(url):
+    owner_name, repo_name = getRepoInfo(url)
+    issue_list = db.session.query(Contributors).filter_by(owner_name=owner_name,
+                                                          repo_name=repo_name).all()
+    res = ""
+    for issue in issue_list:
+        res += issue.title
     return res
+
+
+def textForCloud(url):
+    return getLocalIssue(url)
