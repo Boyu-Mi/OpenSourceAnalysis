@@ -30,6 +30,10 @@ def getCoreContributors():
     # print(data)
     url = data.get('url')
     return getLocalContributor(url)
+    # con_lst, _ = getLocalContributor(url)
+    # con_lst = con_lst["content"]
+    # length = max(1, int(0.3 * len(con_lst)))
+    # return {"content":con_lst[:length]}, 200
 
 
 def getRemoteContributor(url):

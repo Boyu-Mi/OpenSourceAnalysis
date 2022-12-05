@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 from model import *
 import time
 from decorators import decorator_repo,decorator_commit,decorator_stargazers,decorator_issues
-import user
+import view.user
 from view.contributor import updateContributors
 
 blueprint = Blueprint("update", __name__)
@@ -143,7 +143,7 @@ def update_commiters(repo_name,owner_name,param,dict,data = {}):
             continue
         c_name = data[i]["author"]["login"]
         
-        dic = user.user(c_name)[0]
+        dic = view.user.user(c_name)[0]
         if dic["success"] == False:
             continue
         company = dic["company"] # 根据用户名获取其company名
@@ -159,7 +159,7 @@ def update_commiters(repo_name,owner_name,param,dict,data = {}):
 def update_stargazers(repo_name,owner_name,param,dict,data = {}):
     for i in range(0,len(data)):
         c_name = data[i]["login"]
-        dic = user.user(c_name)[0]
+        dic = view.user.user(c_name)[0]
         if dic["success"] == False:
             continue
         company = dic["company"] # 根据用户名获取其company名
@@ -175,7 +175,7 @@ def update_stargazers(repo_name,owner_name,param,dict,data = {}):
 def update_issues(repo_name,owner_name,param,dict,data = {}):
     for i in range(0,len(data)):
         c_name = data[i]["user"]["login"]
-        dic = user.user(c_name)[0]
+        dic = view.user.user(c_name)[0]
         if dic["success"] == False:
             continue
         company = dic["company"] # 根据用户名获取其company名

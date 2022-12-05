@@ -6,6 +6,16 @@ pymysql.install_as_MySQLdb()
 db = SQLAlchemy()
 
 
+class Repos(db.Model):
+    id = sa.Column(sa.Integer,
+                   primary_key=True,
+                   nullable=False)
+    repo_name = sa.Column(sa.String(128), nullable=False, default='')
+    owner_name = sa.Column(sa.String(128), nullable=False, default='')
+    about = sa.Column(sa.String(128), nullable=False, default='')
+    link = sa.Column(sa.String(128), nullable=False, default='')
+    time = sa.Column(sa.DateTime)
+
 class Contributors(db.Model):
     id = sa.Column(sa.Integer,
                    primary_key=True,

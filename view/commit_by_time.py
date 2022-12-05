@@ -5,8 +5,6 @@ from model import *
 
 blueprint = Blueprint("commit_by_time", __name__)
 
-headers = {}
-
 ''' 
     r = requests.get(github_url)
     print(r.links)

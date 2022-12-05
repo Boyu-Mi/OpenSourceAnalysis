@@ -12,5 +12,3 @@ SQLALCHEMY_ECHO = True
 
 # 禁止自动提交数据处理
 SQLALCHEMY_COMMIT_ON_TEARDOWN = False
-
-num = 1

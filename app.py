@@ -7,28 +7,24 @@ from view.issue import textForCloud
 import requests
 from flask import Flask, request
 from flask_cors import CORS
-
-import commit_by_time
 import config
-import update
-import user
 import view.view, view.commit, view.contributor, view.issue
 from model import *
-import update, user, commit_by_time, company
+import update, view.user, view.commit_by_time as commit_by_time, view.company, view.get_repo
 import cloud.cloud
-from decorators import decorator_repo
 
 app = Flask(__name__)
 
 
 # 注册蓝图
 app.register_blueprint(update.blueprint, url_prefix='/')
-app.register_blueprint(user.blueprint, url_prefix='/')
+app.register_blueprint(view.user.blueprint, url_prefix='/')
 app.register_blueprint(commit_by_time.blueprint, url_prefix='/')
 app.register_blueprint(view.issue.blueprint, url_prefix='/')
 app.register_blueprint(view.commit.blueprint, url_prefix='/')
 app.register_blueprint(view.contributor.blueprint, url_prefix='/')
-app.register_blueprint(company.blueprint,url_prefix='/')
+app.register_blueprint(view.company.blueprint,url_prefix='/')
+app.register_blueprint(view.get_repo.blueprint,url_prefix='/')
 
 basedir = os.path.abspath(app.root_path)
 app.config.from_object(config)  # 读取配置
@@ -64,22 +60,6 @@ def get_cloud_image(num,url):
     res = cloud.cloud.make_cloud_img(text, 2)
     # print(res[1])
     return cloud.cloud.im_2_b64(res[0])
-
-
-@app.route('/get_repo/', methods=['GET', 'POST'])
-@decorator_repo
-def get_repo(u_list=None,data=None):
-    repo_name = u_list[-1]
-    owner_name = u_list[-2]
-    res = {
-        "id": config.num,
-        "name": repo_name,
-        "owner": owner_name,
-        "about": data["description"],
-        "link": data["html_url"]
-    }
-    config.num += 1
-    return {"content": res}, 200
 
 
 @app.route('/commit/', methods=['GET', 'POST'])
