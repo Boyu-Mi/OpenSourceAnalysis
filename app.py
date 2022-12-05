@@ -61,7 +61,7 @@ def get_cloud_image(num,url):
     print( "--- Cloud url: " + new_url + "---")
     text = textForCloud(url)
     # 单纯获取测试用的字符串，直接make然后返回就可以了
-    res = cloud.cloud.make_cloud_img(text, 3)
+    res = cloud.cloud.make_cloud_img(text, 2)
     # print(res[1])
     return cloud.cloud.im_2_b64(res[0])
 
