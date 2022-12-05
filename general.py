@@ -1,3 +1,4 @@
+
 def getApiUrl(url, parameter):
     """
     从仓库url中获取仓库相关api查询地址
