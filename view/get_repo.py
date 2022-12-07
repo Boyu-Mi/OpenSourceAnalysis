@@ -8,12 +8,12 @@ blueprint = Blueprint("get_repo", __name__)
 @blueprint.route('/get_repo/', methods=['GET', 'POST'])
 @decorator_get_repo
 def get_repo(u_list=None):
-    # db.create_all()
+    db.create_all()
     repo_name = u_list[-1]
     owner_name = u_list[-2]
     
     result = db.session.query(Repos).filter_by(repo_name=repo_name, owner_name=owner_name).first()
-    if result is None or len(result) == 0:
+    if result is None:
         return new_repo(u_list=u_list)
     ret = {"success": True, "message": "success!", "time": result.time}
     res = {

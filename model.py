@@ -70,9 +70,9 @@ class Commit_count(db.Model):
 class Issue(db.Model):
     repo_name = sa.Column(sa.String(128), primary_key=True, nullable=False, default='')  # 联合主键
     owner_name = sa.Column(sa.String(128), primary_key=True, nullable=False, default='')  # 联合主键
-    id = sa.Column(sa.Integer, nullable=False)
-    title = sa.Column(sa.String, nullable=False, default='')
-    body = sa.Column(sa.String, nullable=False, default='')
+    id = sa.Column(sa.Integer, primary_key=True, nullable=False)
+    title = sa.Column(sa.Text, nullable=False, default='')
+    body = sa.Column(sa.Text, nullable=False, default='')
     
 class Commiter_company(db.Model):
     repo_name = sa.Column(sa.String(128), primary_key=True, nullable=False, default='') #联合主键

@@ -59,8 +59,14 @@ def get_issues(url):
 
 def getLocalIssue(url):
     owner_name, repo_name = getRepoInfo(url)
-    issue_list = db.session.query(Contributors).filter_by(owner_name=owner_name,
+    issue_list = db.session.query(Issue).filter_by(owner_name=owner_name,
                                                           repo_name=repo_name).all()
+    if len(issue_list) == 0:
+        get_issues(url)
+        issue_list = db.session.query(Issue).filter_by(owner_name=owner_name,
+                                                          repo_name=repo_name).all()
+    print("====================================================")
+    print(issue_list)
     res = ""
     for issue in issue_list:
         res += issue.title
@@ -68,4 +74,5 @@ def getLocalIssue(url):
 
 
 def textForCloud(url):
-    return getLocalIssue(url)
+    text = getLocalIssue(url)
+    return text
