@@ -13,7 +13,7 @@ def get_repo(u_list=None):
     owner_name = u_list[-2]
     
     result = db.session.query(Repos).filter_by(repo_name=repo_name, owner_name=owner_name).first()
-    if result is None:
+    if result is None or len(result) == 0:
         return new_repo(u_list=u_list)
     ret = {"success": True, "message": "success!", "time": result.time}
     res = {

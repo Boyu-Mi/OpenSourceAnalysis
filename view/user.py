@@ -12,7 +12,7 @@ blueprint = Blueprint("user", __name__)
 @blueprint.route('/get_user/<name>/', methods=['GET', 'POST'])
 def user(name):
     result = db.session.query(User).filter_by(user_name=name).first()
-    if result is None:
+    if result is None or len(result)==0:
         return update_user(name)
     ret = {}
     user_name = name
