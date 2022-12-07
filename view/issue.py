@@ -1,8 +1,8 @@
 import requests
 import json
 from flask import Blueprint, request
-from general import getApiUrl
-
+from general import *
+from model import *
 blueprint = Blueprint("issues", __name__)
 
 headers = {}
@@ -41,6 +41,7 @@ def get_issues(url):
     issue_request = requests.get(url=issue_url, params=param,headers=headers)
     issues_of_this_page = json.loads(issue_request.content)
 
+    owner_name, repo_name = getRepoInfo(url)
     for issue in issues_of_this_page:
         if issue['body'] is not None:
             issues.append(
@@ -49,12 +50,22 @@ def get_issues(url):
                     "body": issue['body']  # body of the issue
                 }
             )
+        issue_id = issue['number']
+        db.session.merge(
+            Issue(owner_name=owner_name, repo_name=repo_name, id=issue_id, title=issue['title'], body=issue['body'])
+        )
+    db.session.commit()
     return issues, 200
+
+def getLocalIssue(url):
+    owner_name, repo_name = getRepoInfo(url)
+    issue_list = db.session.query(Contributors).filter_by(owner_name=owner_name,
+                                                          repo_name=repo_name).all()
+    res = ""
+    for issue in issue_list:
+        res += issue.title
+    return res
 
 
 def textForCloud(url):
-    res = ''
-    issues_ = get_issues(url)[0]
-    for issue in issues_:
-        res += issue["title"]
-    return res
+    return getLocalIssue(url)
