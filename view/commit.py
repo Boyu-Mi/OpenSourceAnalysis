@@ -7,6 +7,16 @@ from model import *
 
 blueprint = Blueprint("commits", __name__)
 
+headers = {}
+try:
+    with open('token', 'r') as token_file:  # 本地有token文件，就用token，没有token就直接查询
+        token = token_file.readline()
+        headers = {
+            "Authorization": token
+        }
+except FileNotFoundError:
+    pass
+
 
 @blueprint.route('/commits', methods=['GET', 'POST'])
 def updateCommit():
@@ -23,7 +33,7 @@ def getRemoteCommit(url):
     """
     u_list = url.split('/')
     api = getApiUrl(url, '')[:-1]
-    api_request = requests.get(url=api)
+    api_request = requests.get(url=api,headers=headers)
     owner_name, repo_name = getRepoInfo(url)
     if api_request.ok:
         contents = json.loads(api_request.content)
@@ -41,7 +51,7 @@ def getRemoteCommit(url):
             committers = {}
             date_list = []
             api = getApiUrl(url, 'commits')
-            api_request = requests.get(url=api)
+            api_request = requests.get(url=api,headers=headers)
             contents = json.loads(api_request.content)
             for committer in contents:
                 committer_id = committer["sha"]
@@ -86,7 +96,7 @@ def getRemoteCommit(url):
             for i in range(0, len(sorted_dict)):
                 if sorted_dict[i]:
                     commit_url = 'https://github.com/' + sorted_dict[i][0]
-                    api_request = requests.get('https://api.github.com/users/' + sorted_dict[i][0])
+                    api_request = requests.get('https://api.github.com/users/' + sorted_dict[i][0],headers=headers)
                     user_info = json.loads(api_request.content)
                     avatar_url_1 = user_info['avatar_url']
                     commit_users.append({"user": sorted_dict[i][0], "url": commit_url, "a_url": avatar_url_1})

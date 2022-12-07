@@ -6,19 +6,35 @@ from flask import Blueprint, request
 
 blueprint = Blueprint("contributors", __name__)
 
+headers = {}
+try:
+    with open('token', 'r') as token_file:  # 本地有token文件，就用token，没有token就直接查询
+        token = token_file.readline()
+        headers = {
+            "Authorization": token
+        }
+except FileNotFoundError:
+    pass
 
-@blueprint.route('/contributors/update', methods=['GET', 'POST'])
-def updateContributors():
-    data = eval(request.get_data())  # dangerous!!!!!
-    url = data.get('url')
+@blueprint.route('/contributors/update/', methods=['GET', 'POST'])
+def updateContributors(u_list):
+    # data = eval(request.get_data())  # dangerous!!!!!
+    # url = data.get('url')
+    url = "https://github.com/"+u_list[-2]+"/"+u_list[-1]
     return getRemoteContributor(url)
 
 
-@blueprint.route('/contributors/local', methods=['GET', 'POST'])
+@blueprint.route('/get_contributors/all/', methods=['GET', 'POST'])
 def getCoreContributors():
     data = eval(request.get_data())  # dangerous!!!!!
+    # print("====================================")
+    # print(data)
     url = data.get('url')
     return getLocalContributor(url)
+    # con_lst, _ = getLocalContributor(url)
+    # con_lst = con_lst["content"]
+    # length = max(1, int(0.3 * len(con_lst)))
+    # return {"content":con_lst[:length]}, 200
 
 
 def getRemoteContributor(url):
@@ -27,7 +43,7 @@ def getRemoteContributor(url):
     """
     contributor_url = getApiUrl(url, 'contributors')
     repo_info_url = getApiUrl(url, '')[:-1]
-    contributor_info_request = requests.get(url=contributor_url)
+    contributor_info_request = requests.get(url=contributor_url,headers=headers)
     repo_info_request = requests.get(url=repo_info_url)
     if not contributor_info_request.ok and not repo_info_request.ok:
         # invalid result
@@ -54,7 +70,7 @@ def getRemoteContributor(url):
                 )
             else:
                 # 数据库中不存在该仓库中该贡献者的信息，则添加该仓库，该贡献者的贡献数据
-                db.session.add(
+                db.session.merge(
                     Contributors(
                         owner_name=repo_info['owner']['login'],
                         repo_name=repo_info['name'],
@@ -66,7 +82,7 @@ def getRemoteContributor(url):
         return {
                    "success": True,
                    "message": "success!",
-                   "content": json.dumps(contributors_list)
+                   "content": contributors_list
                }, 200
 
     return {
@@ -77,7 +93,11 @@ def getRemoteContributor(url):
 
 def getLocalContributor(url):
     _, repo_name = getRepoInfo(url)
-    contributors = db.session.query(Contributors).filter_by(repo_name=repo_name)
+    contributors = db.session.query(Contributors).filter_by(repo_name=repo_name).order_by(Contributors.con_num.desc()).all()
+    # print("=============================="+str(contributors))
+    if contributors is None or len(contributors) == 0:
+        getRemoteContributor(url)
+        contributors = db.session.query(Contributors).filter_by(repo_name=repo_name).order_by(Contributors.con_num.desc()).all()
     contributors_list = []
     for contributor in contributors:
         contributors_list.append(
@@ -87,13 +107,14 @@ def getLocalContributor(url):
             }
         )
 
-    return contributors_list, 200
+    return {"content":contributors_list}, 200
 
 
-@blueprint.route('/contributors/core', methods=['GET', 'POST'])
+@blueprint.route('/get_contributors/core/', methods=['GET', 'POST'])
 def getCoreContributor():
     data = eval(request.get_data())  # dangerous!!!!!
     url = data.get('url')
     con_lst, _ = getLocalContributor(url)
+    con_lst = con_lst["content"]
     length = max(1, int(0.2 * len(con_lst)))
-    return con_lst[:length], 200
+    return {"content":con_lst[:length]}, 200

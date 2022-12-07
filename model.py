@@ -6,13 +6,23 @@ pymysql.install_as_MySQLdb()
 db = SQLAlchemy()
 
 
-class Contributors(db.Model):
+class Repos(db.Model):
     id = sa.Column(sa.Integer,
                    primary_key=True,
                    nullable=False)
-    owner_name = sa.Column(sa.String(128), nullable=False, default='')
     repo_name = sa.Column(sa.String(128), nullable=False, default='')
-    con_name = sa.Column(sa.String(128), nullable=False, default='')
+    owner_name = sa.Column(sa.String(128), nullable=False, default='')
+    about = sa.Column(sa.String(128), nullable=False, default='')
+    link = sa.Column(sa.String(128), nullable=False, default='')
+    time = sa.Column(sa.DateTime)
+
+class Contributors(db.Model):
+    # id = sa.Column(sa.Integer,
+    #                primary_key=True,
+    #                nullable=False)
+    owner_name = sa.Column(sa.String(128),primary_key=True, nullable=False, default='')
+    repo_name = sa.Column(sa.String(128),primary_key=True, nullable=False, default='')
+    con_name = sa.Column(sa.String(128),primary_key=True, nullable=False, default='')
     con_num = sa.Column(sa.Integer)
 
 
@@ -63,4 +73,24 @@ class Issue(db.Model):
     id = sa.Column(sa.Integer, nullable=False)
     title = sa.Column(sa.String, nullable=False, default='')
     body = sa.Column(sa.String, nullable=False, default='')
+    
+class Commiter_company(db.Model):
+    repo_name = sa.Column(sa.String(128), primary_key=True, nullable=False, default='') #联合主键
+    owner_name = sa.Column(sa.String(128), primary_key=True, nullable=False, default='') #联合主键
+    company = sa.Column(sa.String(128), primary_key=True) #联合主键
+    count = sa.Column(sa.Integer, nullable=False, default=0) #该company人数
+    time = sa.Column(sa.DateTime) #数据库更新时间
 
+class Stargazer_company(db.Model):
+    repo_name = sa.Column(sa.String(128), primary_key=True, nullable=False, default='') #联合主键
+    owner_name = sa.Column(sa.String(128), primary_key=True, nullable=False, default='') #联合主键
+    company = sa.Column(sa.String(128), primary_key=True) #联合主键
+    count = sa.Column(sa.Integer, nullable=False, default=0) #该company人数
+    time = sa.Column(sa.DateTime) #数据库更新时间
+
+class Issue_company(db.Model):
+    repo_name = sa.Column(sa.String(128), primary_key=True, nullable=False, default='') #联合主键
+    owner_name = sa.Column(sa.String(128), primary_key=True, nullable=False, default='') #联合主键
+    company = sa.Column(sa.String(128), primary_key=True) #联合主键
+    count = sa.Column(sa.Integer, nullable=False, default=0) #该company人数
+    time = sa.Column(sa.DateTime) #数据库更新时间

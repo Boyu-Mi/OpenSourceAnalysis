@@ -1,6 +1,15 @@
 import requests
 import json
 
+headers = {}
+try:
+    with open('token', 'r') as token_file:  # 本地有token文件，就用token，没有token就直接查询
+        token = token_file.readline()
+        headers = {
+            "Authorization": token
+        }
+except FileNotFoundError:
+    pass
 
 def get_issues():
     """
@@ -22,7 +31,7 @@ def get_issues():
     u_list = url.strip('/').split('/')
     issues_url = 'https://api.github.com/repos/' + u_list[-2] + '/' + u_list[-1] + '/issues'
     try:
-        issue_request = requests.get(url=issues_url, headers=header, timeout=5, params=param)
+        issue_request = requests.get(url=issues_url, headers=headers, timeout=5, params=param)
     except requests.exceptions.ReadTimeout:
         raise
     if not issue_request.ok:
@@ -54,7 +63,7 @@ def get_pulls():
         "state": "all"  # get both open&closed prs "all" or "open" or "closed"
     }
     try:
-        pr_request = requests.get(url=pr_url, headers=header, timeout=5, params=param)
+        pr_request = requests.get(url=pr_url, headers=headers, timeout=5, params=param)
     except requests.exceptions.ReadTimeout:
         raise
     if not pr_request.ok:
