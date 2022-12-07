@@ -17,9 +17,10 @@ except FileNotFoundError:
     pass
 
 @blueprint.route('/contributors/update/', methods=['GET', 'POST'])
-def updateContributors():
-    data = eval(request.get_data())  # dangerous!!!!!
-    url = data.get('url')
+def updateContributors(u_list):
+    # data = eval(request.get_data())  # dangerous!!!!!
+    # url = data.get('url')
+    url = "https://github.com/"+u_list[-2]+"/"+u_list[-1]
     return getRemoteContributor(url)
 
 
@@ -69,7 +70,7 @@ def getRemoteContributor(url):
                 )
             else:
                 # 数据库中不存在该仓库中该贡献者的信息，则添加该仓库，该贡献者的贡献数据
-                db.session.add(
+                db.session.merge(
                     Contributors(
                         owner_name=repo_info['owner']['login'],
                         repo_name=repo_info['name'],
@@ -81,7 +82,7 @@ def getRemoteContributor(url):
         return {
                    "success": True,
                    "message": "success!",
-                   "content": json.dumps(contributors_list)
+                   "content": contributors_list
                }, 200
 
     return {
@@ -92,7 +93,11 @@ def getRemoteContributor(url):
 
 def getLocalContributor(url):
     _, repo_name = getRepoInfo(url)
-    contributors = db.session.query(Contributors).filter_by(repo_name=repo_name)
+    contributors = db.session.query(Contributors).filter_by(repo_name=repo_name).order_by(Contributors.con_num.desc()).all()
+    # print("=============================="+str(contributors))
+    if contributors is None or len(contributors) == 0:
+        getRemoteContributor(url)
+        contributors = db.session.query(Contributors).filter_by(repo_name=repo_name).order_by(Contributors.con_num.desc()).all()
     contributors_list = []
     for contributor in contributors:
         contributors_list.append(

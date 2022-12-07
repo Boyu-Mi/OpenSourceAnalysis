@@ -17,12 +17,12 @@ class Repos(db.Model):
     time = sa.Column(sa.DateTime)
 
 class Contributors(db.Model):
-    id = sa.Column(sa.Integer,
-                   primary_key=True,
-                   nullable=False)
-    owner_name = sa.Column(sa.String(128), nullable=False, default='')
-    repo_name = sa.Column(sa.String(128), nullable=False, default='')
-    con_name = sa.Column(sa.String(128), nullable=False, default='')
+    # id = sa.Column(sa.Integer,
+    #                primary_key=True,
+    #                nullable=False)
+    owner_name = sa.Column(sa.String(128),primary_key=True, nullable=False, default='')
+    repo_name = sa.Column(sa.String(128),primary_key=True, nullable=False, default='')
+    con_name = sa.Column(sa.String(128),primary_key=True, nullable=False, default='')
     con_num = sa.Column(sa.Integer)
 
 

@@ -32,7 +32,7 @@ def update(u_list,data):
     #     ret["message"] = "Update company failed!"
     #     return ret,404
 
-    dic = updateContributors()[0]
+    dic = updateContributors(u_list)[0]
     if dic["success"] == False:
         ret["success"] = False
         ret["message"] = "Update commit_by_time failed!"
