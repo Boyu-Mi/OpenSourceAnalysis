@@ -65,8 +65,8 @@ def getLocalIssue(url):
         get_issues(url)
         issue_list = db.session.query(Issue).filter_by(owner_name=owner_name,
                                                           repo_name=repo_name).all()
-    print("====================================================")
-    print(issue_list)
+    # print("====================================================")
+    # print(issue_list)
     res = ""
     for issue in issue_list:
         res += issue.title

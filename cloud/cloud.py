@@ -38,7 +38,7 @@ def make_cloud_img(text, threashold=5):
     # print(string)
     (w_map, stem_string) = string_stream_stem(text, threashold)
     if(len(stem_string) < 5):
-        stem_string += "(NO REPOS)"
+        stem_string += "(Insufficient Issues)"
 
     img = Image.open('cloud\\Octocat.jpg') 
     img_array = np.array(img) 

@@ -1,14 +1,16 @@
 import axios from "axios";
 import React from "react";
-import LineGraph from "./LineGraph";
+import CustomerLogin from "./CustomerLogin";
 
-export default class Callaxios extends React.Component {
+export default class CallCustomerLogin extends React.Component {
     constructor(props) {
         super(props);
         this.state =
             {
                 is_inited: false,
-                content: {timeline: [], ydata: []}
+                content: {
+                    timeline: [], ydata: []
+                }
             }
     }
 
@@ -33,9 +35,7 @@ export default class Callaxios extends React.Component {
         console.log("get from server");
         axios.post
         (
-            // window.back_url + window.get_commit,
-            // window.back_url + window.get_contributors_all,
-            window.back_url + window.get_commit_by_time,
+            window.back_url + window.get_user,
             JSON.stringify(pack),
             {headers: headerJSON}
         )
@@ -64,10 +64,9 @@ export default class Callaxios extends React.Component {
             console.log("content")
             console.log(this.state.content)
             return (
-                <LineGraph
-                    timeline={this.state.content.timeline}
-                    ydata={this.state.content.ydata}
-                ></LineGraph>
+                <CustomerLogin>
+
+                </CustomerLogin>
             )
         } else {
             this.get_from_server();

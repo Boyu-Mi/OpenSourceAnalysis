@@ -22,10 +22,12 @@ import CallLineGraph from './CallLineGraph';
 import CallRoundGraph from './CallRoundGraph';
 import Allin from './Allin';
 import CallBarChart from './CallBarChart';
+import ErrorPage from "./ErrorPage";
 
 // npm install react-sortable-hoc -S --legacy-peer-deps
 
-// window.back_url = "http://10.112.35.32:5000"
+// window.back_url = "http://10.162.93.173:5000"
+// window.back_url = "http://192.168.43.162:5000"
 window.back_url = "http://127.0.0.1:5000"
 window.get_commit = "/get_commit/"
 window.get_repo = "/get_repo/"
@@ -79,16 +81,59 @@ export default function App() {
 
   const [lay_out_state, changeLayoutState] = React.useState("Repos");
 
-  function addNewRepo(repo) 
+  const [error_page, changeErrorState] = React.useState(false);
+
+  const [showing_repo_url, changeRepoUrl] = React.useState(null);
+
+  function addNewRepo(repo)
   {
-    addRepoToList(repoList.concat(repo))
-    addRepoNameList(repo_name_list.concat(repo.name))
-    addRepoUrlList(repo_url_list.concat(repo.link))
+    // 检测repo的信息是否合法，做错误页面的切换
+    if(repo.id == null){
+      toErrorPage();
+    }
+    else {
+      noErrorPage();
+      addRepoToList(repoList.concat(repo))
+      addRepoNameList(repo_name_list.concat(repo.name))
+      addRepoUrlList(repo_url_list.concat(repo.link))
+    }
+  }
+
+  function get_showing_repo()
+  {
+    if(showing_repo_url === null)
+    {
+      return (null);
+    }
+    else 
+    {
+      var index = -1;
+      for(var i=0; i<repo_url_list.length; i++)
+      {
+        if(repo_url_list[i] === showing_repo_url)
+        {
+          index = i;
+        }
+      }
+      if(index === -1)
+      {
+        return null;
+      }
+      return (
+        <Allin 
+            about = {repoList[index].about}
+            url = {showing_repo_url}
+            repo_name = {repo_name_list[index]}
+            key = {index}
+        ></Allin>
+      )
+    }
+    
   }
 
   function getLayOut()
   {
-    if(lay_out_state == "Repos")
+    if(lay_out_state === "Repos")
     {
       return (
           <Content style={{
@@ -100,13 +145,18 @@ export default function App() {
               style={{
                 borderRadius: '10px',
                 border: '1px solid var(--semi-color-border)',
+                minHeight:'550px',
                 height: 'auto',
                 padding: '32px',
               }}
             >
               <SearchBar onSubmit={addNewRepo} />
               {/* repo数量非常多时，是全部平铺展示而不是在 Content 内部形成下滑条 */}
-              <ReposGroup repoList={repoList} />
+              {error_page ? <ErrorPage/>:<ReposGroup
+                         onSubmitRepo={(url) => {changeRepoUrl(url)}}
+                         showing_url={showing_repo_url}
+                         repoList={repoList} />}
+              {get_showing_repo()}
               {/* <Graph/>
               <DoubleGraph/>
               <RoundGraph/>
@@ -116,11 +166,12 @@ export default function App() {
               <CompareShowing />
               <CustomerLogin />
               <CardOfName></CardOfName> */}
+              {/*<ErrorPage/>*/}
             </div>
           </Content>          
       )
     }
-    else if(lay_out_state == "Comparation")
+    else if(lay_out_state === "Comparation")
     {
       return (
         <CompareShowing 
@@ -129,12 +180,17 @@ export default function App() {
         />
       )
     }
-    else if(lay_out_state == "Accounts")
+    else if(lay_out_state === "Accounts")
     {
       return (
         <div>
           <CustomerPage></CustomerPage>
         </div>
+      )
+    }
+    else if(lay_out_state === "ErrorPage") {
+      return (
+          <ErrorPage></ErrorPage>
       )
     }
     else 
@@ -161,6 +217,16 @@ export default function App() {
   const toAccounts = () =>
   {
     changeLayoutState("Accounts");
+  }
+
+  const toErrorPage = () =>
+  {
+    changeErrorState(true);
+  }
+
+  const noErrorPage = () =>
+  {
+    changeErrorState(false);
   }
 
   function getKey()
