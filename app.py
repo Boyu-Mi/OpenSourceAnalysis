@@ -12,6 +12,7 @@ import view.view, view.commit, view.contributor, view.issue
 from model import *
 import update, view.user, view.commit_by_time as commit_by_time, view.company, view.get_repo
 import cloud.cloud
+from flask_migrate import Migrate
 
 app = Flask(__name__)
 
@@ -40,6 +41,10 @@ try:
         }
 except FileNotFoundError:
     pass
+
+# 初始化 migrate
+# 两个参数一个是 Flask 的 app，一个是数据库 db
+Migrate(app, db)
 
 
 # 这里缺个转换

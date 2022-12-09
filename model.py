@@ -13,6 +13,9 @@ class Repos(db.Model):
     repo_name = sa.Column(sa.String(128), nullable=False, default='')
     owner_name = sa.Column(sa.String(128), nullable=False, default='')
     about = sa.Column(sa.String(128), nullable=False, default='')
+    stargazers_count = sa.Column(sa.Integer, nullable=False, default='')
+    forks_count = sa.Column(sa.Integer, nullable=False, default='')
+    watchers_count = sa.Column(sa.Integer, nullable=False, default='')
     link = sa.Column(sa.String(128), nullable=False, default='')
     time = sa.Column(sa.DateTime)
 
@@ -30,9 +33,9 @@ class Commits(db.Model):
     id = sa.Column(sa.String(40),
                    primary_key=True,
                    nullable=False)
-    owner_name = sa.Column(sa.String(128), nullable=False, default='')
-    repo_name = sa.Column(sa.String(128), nullable=False, default='')
-    con_name = sa.Column(sa.String(128), nullable=False, default='')
+    repo_name = sa.Column(sa.String(128), nullable=False, default='')  # 联合主键
+    owner_name = sa.Column(sa.String(128), nullable=False, default='')  # 联合主键
+    timeline = sa.Column(sa.DateTime, primary_key=True)
 
 
 class date01(db.Model):

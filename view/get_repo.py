@@ -21,7 +21,10 @@ def get_repo(u_list=None):
         "name": repo_name,
         "owner": owner_name,
         "about": result.about,
-        "link": result.link
+        "link": result.link,
+        "stargazers_count": result.stargazers_count,
+        "forks_count" :result.forks_count,
+        "watchers_count": result.watchers_count
     }
     ret["content"] = res
     return ret, 200
@@ -41,13 +44,17 @@ def new_repo(u_list=None,data=None):
         "name": repo_name,
         "owner": owner_name,
         "about": data["description"],
-        "link": data["html_url"]
+        "link": data["html_url"],
+        "stargazers_count" : data['stargazers_count'],  # number of star
+        "forks_count" : data['forks_count'],
+        "watchers_count" : data['watchers_count']
     }
 
     
     # 存储信息到数据库
     db.session.merge(
-        Repos(id=res["id"], repo_name=repo_name, owner_name=owner_name, about=data["description"],link=data["html_url"],time=time)
+        Repos(id=res["id"], repo_name=repo_name, owner_name=owner_name, about=data["description"],link=data["html_url"],
+        time=time,stargazers_count=data['stargazers_count'], forks_count=data['forks_count'],watchers_count=data['watchers_count'])
     )
     db.session.commit()
     ret["content"] = res
