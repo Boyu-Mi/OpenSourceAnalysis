@@ -29,7 +29,6 @@ import ErrorPage from "./ErrorPage";
 // window.back_url = "http://10.162.93.173:5000"
 // window.back_url = "http://192.168.43.162:5000"
 window.back_url = "http://121.4.99.100:5000"
-window.back_url = "http://127.0.0.1:5000"
 window.get_commit = "/get_commit/"
 window.get_repo = "/get_repo/"
 window.get_contributors = "/get_contributors/"
