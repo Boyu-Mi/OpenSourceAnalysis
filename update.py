@@ -37,17 +37,19 @@ def update(u_list,data):
         ret["message"] = "Update commit_by_time failed!"
         return ret,404
 
+    dic = updateContributors(u_list)[0]
+    if dic["success"] == False:
+        ret["success"] = False
+        ret["message"] = "Update contributor failed!"
+        return ret,404
+
     # company信息涉及的user太多了，在线获取的话要极其久（仅仅在<=1500个用户的情况下），老师只要求pytorch，不如提前update，随后的update就取消这一步
     if update_company(repo_name,owner_name) == False:
         ret["success"] = False
         ret["message"] = "Update company failed!"
         return ret,404
 
-    dic = updateContributors(u_list)[0]
-    if dic["success"] == False:
-        ret["success"] = False
-        ret["message"] = "Update commit_by_time failed!"
-        return ret,404
+
 
     # update_repo_with_url(data.get("url"))
     return ret,200
@@ -70,7 +72,12 @@ def get_commit_info(repo,owner,param,data = {}):
         db.session.merge(
             Commits(id=id,repo_name=repo,owner_name=owner,timeline=c_time)
         )
-        db.session.commit()
+        # db.session.flush()
+        try:
+            db.session.commit()
+        except:
+            db.session.rollback()
+        # db.session.flush()
     return True #最后一个返回值表示成功与否
 
 def update_commit_by_time(repo_name,owner_name,data = {}):
@@ -102,7 +109,12 @@ def update_commit_by_time(repo_name,owner_name,data = {}):
         db.session.merge(
             Commit_count(repo_name=repo_name,owner_name=owner_name,timeline=key,commit_count=value, time=time)
         )
-        db.session.commit()
+        # db.session.flush()
+        try:
+            db.session.commit()
+        except:
+            db.session.rollback()
+        # db.session.flush()
     return True
 
 def update_company(repo_name,owner_name):
@@ -110,9 +122,9 @@ def update_company(repo_name,owner_name):
     page=0
     dict = {}
     data = {}
-    while(data is not None and page <=1): # 只能查看最近100条，若要更改请改page参数
+    while(data is not None and page <=1): # 只能查看最近50条，若要更改请改page参数
         page += 1
-        param = {"per_page":100,"page":page}
+        param = {"per_page":50,"page":page}
         data = update_commiters(repo_name,owner_name,param,dict)
         if data[1] == False:
             return False
@@ -123,14 +135,18 @@ def update_company(repo_name,owner_name):
         db.session.merge(
             Commiter_company(repo_name=repo_name,owner_name=owner_name,company=key,count=value,time=time)
         )
-        db.session.commit()
-    
+        # db.session.flush()
+        try:
+            db.session.commit()
+        except:
+            db.session.rollback()
+        # db.session.flush()
     page=0
     dict = {}
     data = {}
-    while(data is not None and page <=1): # 只能查看最近100条，若要更改请改page参数
+    while(data is not None and page <=1): # 只能查看最近50条，若要更改请改page参数
         page += 1
-        param = {"per_page":100,"page":page}
+        param = {"per_page":50,"page":page}
         data = update_stargazers(repo_name,owner_name,param,dict)
         if data[1] == False:
             return False
@@ -141,14 +157,19 @@ def update_company(repo_name,owner_name):
         db.session.merge(
             Stargazer_company(repo_name=repo_name,owner_name=owner_name,company=key,count=value,time=time)
         )
-        db.session.commit()
+        # db.session.flush()
+        try:
+            db.session.commit()
+        except:
+            db.session.rollback()
+        # db.session.flush()
 
     page=0
     dict = {}
     data = {}
-    while(data is not None and page <=1): # 只能查看最近100条，若要更改请改page参数
+    while(data is not None and page <=1): # 只能查看最近50条，若要更改请改page参数
         page += 1
-        param = {"per_page":100,"page":page}
+        param = {"per_page":50,"page":page}
         data = update_issues(repo_name,owner_name,param,dict)
         if data[1] == False:
             return False
@@ -159,7 +180,12 @@ def update_company(repo_name,owner_name):
         db.session.merge(
             Issue_company(repo_name=repo_name,owner_name=owner_name,company=key,count=value,time=time)
         )
-        db.session.commit()
+        # db.session.flush()
+        try:
+            db.session.commit()
+        except:
+            db.session.rollback()
+        # db.session.flush()
     return True
 
 @decorator_commit

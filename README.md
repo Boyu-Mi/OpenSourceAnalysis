@@ -6,7 +6,7 @@ ZJU-SRE project
 
 ### 构建数据库：
 
-先自己新建一个test数据库（也可以是别的，比如改成sre, 需要修改sql文件的开头：）
+先自己新建一个test数据库（也可以是别的，比如改成sre）
 
 ![image-20221209175750187](README.assets\image-20221209175750187.png)
 

@@ -8,7 +8,8 @@ SQLALCHEMY_DATABASE_URI = 'mysql://%s:%s@127.0.0.1:3306/%s' % (user,password,dat
 SQLALCHEMY_TRACK_MODIFICATIONS = True
 
 # 查询时会显示原始SQL语句
-SQLALCHEMY_ECHO = True
+SQLALCHEMY_ECHO = False
 
 # 禁止自动提交数据处理
 SQLALCHEMY_COMMIT_ON_TEARDOWN = False
+

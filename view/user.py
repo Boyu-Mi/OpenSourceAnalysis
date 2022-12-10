@@ -60,11 +60,17 @@ def update_user(name, data=None):
     date_u = datetime.strptime(ret["updated_at"],
                                "%Y-%m-%d %H:%M:%S")
     # 存储信息到数据库
+    result = db.session.query(User).filter_by(user_name=name).first()
     db.session.merge(
         User(id=ret["id"], user_type=ret["user_type"],
              user_name=user_name, company=ret["company"],
              avatar_url=ret["avatar_url"], user_url=ret["user_url"], created_at=date_c, updated_at=date_u,
              follower_number=ret["follower_number"], public_repo_number=ret["public_repo_number"], time=time)
     )
-    db.session.commit()
+    # db.session.flush()
+    try:
+        db.session.commit()
+    except:
+        db.session.rollback()
+    # db.session.flush()
     return ret, 200

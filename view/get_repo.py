@@ -56,6 +56,11 @@ def new_repo(u_list=None,data=None):
         Repos(id=res["id"], repo_name=repo_name, owner_name=owner_name, about=data["description"],link=data["html_url"],
         time=time,stargazers_count=data['stargazers_count'], forks_count=data['forks_count'],watchers_count=data['watchers_count'])
     )
-    db.session.commit()
+    # db.session.flush()
+    try:
+        db.session.commit()
+    except:
+        db.session.rollback()
+    # db.session.flush()
     ret["content"] = res
     return ret, 200

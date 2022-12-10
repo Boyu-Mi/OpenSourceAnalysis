@@ -54,7 +54,11 @@ def get_issues(url):
         db.session.merge(
             Issue(owner_name=owner_name, repo_name=repo_name, id=issue_id, title=issue['title'], body=issue['body'])
         )
-    db.session.commit()
+        try:
+            db.session.commit()
+        except:
+            db.session.rollback()
+        # db.session.flush()
     return issues, 200
 
 def getLocalIssue(url):

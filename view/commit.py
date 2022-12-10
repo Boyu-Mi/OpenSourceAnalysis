@@ -100,7 +100,12 @@ def getRemoteCommit(url):
                     user_info = json.loads(api_request.content)
                     avatar_url_1 = user_info['avatar_url']
                     commit_users.append({"user": sorted_dict[i][0], "url": commit_url, "a_url": avatar_url_1})
-            db.session.commit()
+            # db.session.flush()
+            try:
+                db.session.commit()
+            except:
+                db.session.rollback()
+            # db.session.flush()
             return {"success": True,
                     "message": "success!",
                     "target": target,

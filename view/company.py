@@ -1,10 +1,70 @@
 from flask import Blueprint,request
+from functools import wraps
 from datetime import datetime, timedelta
-
-from decorators import decorator_company
+from model import *
+from update import update_company
+# from decorators import decorator_company
 
 blueprint = Blueprint("company", __name__)
 
+
+def decorator_company(type):
+    def decorator_company_inner(func):
+        my_type = type
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            data = request.json
+            url = data.get('url')
+            url = url.strip('/')
+            u_list = url.split('/')
+            repo_name = u_list[-1]
+            owner_name = u_list[-2]
+            result_all = []
+            type = my_type
+            
+            kwargs["u_list"] = u_list
+            result1 = db.session.query(Commiter_company).filter_by(repo_name=repo_name,owner_name=owner_name).order_by(Commiter_company.count.desc()).all()
+            result2 = db.session.query(Stargazer_company).filter_by(repo_name=repo_name,owner_name=owner_name).order_by(Stargazer_company.count.desc()).all()
+            result3 = db.session.query(Issue_company).filter_by(repo_name=repo_name,owner_name=owner_name).order_by(Issue_company.count.desc()).all()
+            
+            if len(result1)==0 or len(result2)==0 or len(result3)==0:
+                # return {
+                #         "success": False,
+                #         "message": "The repo has no infomation in database! Please update infomation first."
+                #     }, 404
+                update_company(repo_name,owner_name)
+            
+            result = db.session.query(Commiter_company).filter_by(repo_name=repo_name,owner_name=owner_name).order_by(Commiter_company.count.desc()).all()
+            result_all.append(result)
+            
+            if type == "commits":
+                kwargs["result"] = result
+
+            result = db.session.query(Stargazer_company).filter_by(repo_name=repo_name,owner_name=owner_name).order_by(Stargazer_company.count.desc()).all()
+            result_all.append(result)
+            
+            #     return {
+            #             "success": False,
+            #             "message": "The repo has no infomation in database! Please update infomation first."
+            #         }, 404
+            if type == "stargazers":
+                kwargs["result"] = result
+
+            result = db.session.query(Issue_company).filter_by(repo_name=repo_name,owner_name=owner_name).order_by(Issue_company.count.desc()).all()
+            result_all.append(result)
+            
+            #     return {
+            #             "success": False,
+            #             "message": "The repo has no infomation in database! Please update infomation first."
+            #         }, 404
+            if type == "issues":
+                kwargs["result"] = result
+            
+            if type == "all":
+                kwargs["result"] = result_all
+            return func(*args, **kwargs)
+        return wrapper
+    return decorator_company_inner
 
 @blueprint.route('/get_company_all/', methods=['GET', 'POST'])
 @decorator_company("all")
@@ -39,8 +99,15 @@ def get_company_commiters(u_list=None, result=None):
     count = []
     repo_name = u_list[-1]
     owner_name = u_list[-2]
-    timestr = result[0].time.strftime("%Y-%m-%d %H:%M:%S")
     ret = {}
+    if len(result) == 0:
+        res = {"contributer" : ["No commiter or no company"], "data" : [0]}
+        ret = {"success": True, "message": "No company info"}
+        ret["repo_name"] = repo_name
+        ret["owner_name"] = owner_name
+        ret["content"] = res
+        return ret, 200
+    timestr = result[0].time.strftime("%Y-%m-%d %H:%M:%S")
     ret["time"] = timestr
     for item in result:
         company.append(item.company)
@@ -60,9 +127,15 @@ def get_company_stargazers(u_list=None, result=None):
     count = []
     repo_name = u_list[-1]
     owner_name = u_list[-2]
-    
-    timestr = result[0].time.strftime("%Y-%m-%d %H:%M:%S")
     ret = {}
+    if len(result) == 0:
+        res = {"contributer" : ["No stargazer or no company"], "data" : [0]}
+        ret = {"success": True, "message": "No company info"}
+        ret["repo_name"] = repo_name
+        ret["owner_name"] = owner_name
+        ret["content"] = res
+        return ret, 200
+    timestr = result[0].time.strftime("%Y-%m-%d %H:%M:%S")
     ret["time"] = timestr
     for item in result:
         company.append(item.company)
@@ -82,8 +155,16 @@ def get_company_issues(u_list=None, result=None):
     count = []
     repo_name = u_list[-1]
     owner_name = u_list[-2]
-    timestr = result[0].time.strftime("%Y-%m-%d %H:%M:%S")
     ret = {}
+    if len(result) == 0:
+        res = {"contributer" : ["No issue or no company"], "data" : [0]}
+        ret = {"success": True, "message": "No company info"}
+        ret["repo_name"] = repo_name
+        ret["owner_name"] = owner_name
+        ret["content"] = res
+        return ret, 200
+    timestr = result[0].time.strftime("%Y-%m-%d %H:%M:%S")
+    
     ret["time"] = timestr
     for item in result:
         company.append(item.company)

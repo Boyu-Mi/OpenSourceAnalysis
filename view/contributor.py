@@ -78,7 +78,11 @@ def getRemoteContributor(url):
                         con_num=item['contributions']
                     )
                 )
-        db.session.commit()
+                try:
+                    db.session.commit()
+                except:
+                    db.session.rollback()
+
         return {
                    "success": True,
                    "message": "success!",

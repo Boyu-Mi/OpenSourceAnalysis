@@ -1,6 +1,6 @@
 from flask import Blueprint,request
 from model import *
-from update import update
+from update import update_commit_by_time
 
 
 blueprint = Blueprint("commit_by_time", __name__)
@@ -46,7 +46,7 @@ def commit_by_time():
         #             "success": False,
         #             "message": "The repo has no infomation in database! Please update infomation first."
         #         }, 404
-        update()
+        update_commit_by_time(repo_name,owner_name)
         result = db.session.query(Commit_count).filter_by(repo_name=repo_name,owner_name=owner_name).all()
     timestr = result[0].time.strftime("%Y-%m-%d %H:%M:%S")
     ret = {}
