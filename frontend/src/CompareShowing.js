@@ -38,6 +38,10 @@ export default class CompareShowing extends React.Component
             "pytorch10",
             "pytorch11"
         ]
+        var stars = [
+           "1200",
+           "2000"
+        ]
         if(this.props.urls)
         {
             urls = this.props.urls
@@ -46,33 +50,43 @@ export default class CompareShowing extends React.Component
         {
             repo_names = this.props.repo_names
         }
+        if(this.props.starlist)
+        {
+            stars = this.props.starlist
+        }
         this.state = 
         {
+            starslist : stars,
             urls : urls,
             repo_names : repo_names,
             links : [],
             names : [],
+            stars : [],
             is_init : false
         }
     }
 
     handelSubmit(new_links)
     {
-        console.log("handelsubmit")
-        console.log(new_links)
+        // console.log("handelsubmit")
+        // console.log(new_links)
         var new_state_links;
         var new_state_names;
+        var new_state_stars;
         if(new_links.length >= 2)
         {
             new_state_links = [ {num : this.state.urls[new_links[0]]} , 
                                 {num : this.state.urls[new_links[1]]}];
             new_state_names = [ this.state.repo_names[new_links[0]],
                                 this.state.repo_names[new_links[1]]];
+            new_state_stars = [ this.state.starslist[new_links[0]],
+                                this.state.starslist[new_links[1]]];
         }
         else 
         {
             new_state_links = [];
             new_state_names = [];
+            new_state_stars = [];
         }
         
         this.setState
@@ -80,10 +94,11 @@ export default class CompareShowing extends React.Component
             {
                 links : new_state_links,
                 names : new_state_names,
+                stars : new_state_stars,
                 is_init : false
             }
         )
-        console.log("handel submit" + new_links);
+        // console.log("handel submit" + new_links);
     }
 
     render()
@@ -93,7 +108,10 @@ export default class CompareShowing extends React.Component
         {
             clouds_components = 
             (
-                <Clouds cloud_links = {this.state.links}
+                
+                <Clouds 
+                    stars = {this.state.stars}
+                    cloud_links = {this.state.links}
                     repo_names = {this.state.names}
                 />
             )

@@ -2,23 +2,22 @@ import React,{useState}from 'react'
 import ReactECharts from 'echarts-for-react';
 import { Card } from '@douyinfe/semi-ui';
 export default function RoundGraph(props) {
-
-    var content = 
-    [
-      { value: 20, name: 'Python' },
-      { value: 15, name: 'C++' },
-      { value: 5, name: 'Javascript' },
-      { value: 20, name: 'Cython' },
-      { value: 40, name: 'Rust' }
-    ]
+    var content = []
     var text = 'Languaege'
-    if(props.content)
+    if(props.is_company == true)
     {
-      content = props.content.sort();
+      props.content.contributer.map((item,idx)=>(
+        content.push({
+          value:props.content.data[idx],
+          name:props.content.contributer[idx]
+        })
+      ))
+    }else{
+      content = props.content
     }
     if(props.text)
     {
-      text = props.text
+      text = props.title
     }
 
     const [data,setData] = useState(content)
@@ -34,6 +33,7 @@ export default function RoundGraph(props) {
           orient: 'vertical',
           left: 'left'
         },
+        color: ['#63b2ee','#76da91','#f8cb7f','#f89588','#7cd6cf','#9192ab','#7898e1','#efa666','#eddd86','#9987ce','#63b2ee','#76da91'],
         tooltip: {
           trigger: 'item',
           formatter: "{a} <br/>{b} : {d}%" 

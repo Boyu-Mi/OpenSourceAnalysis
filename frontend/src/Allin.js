@@ -22,6 +22,7 @@ export default class Allin extends React.Component
         super(props);
         var url = "https://github.com/pytorch/pytorch"
         var repo_name = "default name (all in)"
+        var stargazer = 1700
         if(props.url)
         {
             url = props.url
@@ -30,12 +31,18 @@ export default class Allin extends React.Component
         {
             repo_name = props.repo_name
         }
+        if(props.stargazer)
+        {
+            stargazer = props.stargazer
+        }
         this.state = 
         {
+            stargazer : stargazer,
             url : url,
             repo_name : repo_name,
             is_init : false,
-            is_waiting : false
+            is_waiting : false,
+            msg : "update repo"
         }
     }
 
@@ -62,11 +69,13 @@ export default class Allin extends React.Component
         (
             (res) => 
             {
+                console.log("reached")
                 this.setState
                 (
                     {
                         is_init : false,
                         is_waiting : false
+                        
                     }
                 )
             }
@@ -77,13 +86,18 @@ export default class Allin extends React.Component
     {
         if(this.state.is_init)
         {
-            console.log("All in url: " + this.state.url)
-            var msg = "update repo"
+            // console.log("All in url: " + this.state.url)
             if(this.state.is_waiting)
             {
-                msg = "waiting for the server to update..."
+                this.state.msg = "waiting for the server to update..."
+            }else
+            {
+                this.state.msg = "update repo"
             }
             const { Title, Text, Paragraph } = Typography;
+            var stargazer = this.props.stargazer
+            if(stargazer>=1000)stargazer = toString(stargazer/1000)+"k"
+            else stargazer = toString(stargazer)
             return (
                 <div>
                     {/* <CallLineGraph 
@@ -102,7 +116,7 @@ export default class Allin extends React.Component
                         <Title style={{ margin: '6px 0' }}>{this.state.repo_name}</Title>
                         <br></br>
                         <Space tab="loose" style={{ margin: '6px 0' }}>
-                            <Text icon={<IconUserGroup />}>1.7k follower</Text>
+                            <Text icon={<IconUserGroup />}>{this.state.stargazer} stargazer</Text>
                             <Text icon={<IconLink />} underline><a href={this.state.url}>{this.state.url}</a></Text>
                         </Space>
                         <br></br>
@@ -111,7 +125,7 @@ export default class Allin extends React.Component
                         {this.props.about}
                         </Paragraph>
                         <br></br>
-                        <Button loading = {msg=="update repo"?false:true}onClick={() => {this.update_database()}}>{msg}</Button>
+                        <Button loading = {this.state.is_waiting} onClick={() => {this.update_database()}}>{this.state.msg}</Button>
                         <Divider margin='24px' />
                         <Title heading={3} style={{ margin: '8px 0', color: 'rgba(var(--semi-violet-5),1)' }}>Commits</Title>
                         <Text>Contributions to master, excluding merge commits and bot accounts</Text>
@@ -130,10 +144,12 @@ export default class Allin extends React.Component
                             url={this.state.url}>
                         </CallBarChart>
                         <CallRoundGraph
+                            text = {this.state.repo_name}
                             url = {this.state.url}
                             is_core = {true}
                             maxWidth = {1100}
                             showlegend = {true}
+                            title = {this.state.repo_name}
                         ></CallRoundGraph>
                         <br />
                         <Title heading={3} style={{ margin: '8px 0', color: 'rgba(var(--semi-violet-5),1)' }} >Company</Title>
@@ -145,9 +161,29 @@ export default class Allin extends React.Component
                             <RoundGraph type={"Issue"} />
                         </CardGroup> */}
                         <Row>
-                            <Col span={8} order={3}><div><RoundGraph text={"Stargazer"}/></div></Col>
-                            <Col span={8} order={3}><div><RoundGraph text={"Committer"} /></div></Col>
-                            <Col span={8} order={3}><div><RoundGraph text={"Language"} /></div></Col>
+                            <Col span={8} order={3}><div>
+                                <CallRoundGraph 
+                                is_company = {true}
+                                url = {this.state.url}
+                                text={"Stargazer"}
+                                title = {"Stargazer"}/>
+                            </div></Col>
+                            <Col span={8} order={3}>
+                            <div>
+                                <CallRoundGraph 
+                                is_company = {true}
+                                url = {this.state.url}
+                                text={"Committer"}
+                                title = {"Committer"} />
+                            </div></Col>
+                            <Col span={8} order={3}>
+                            <div>
+                                <CallRoundGraph
+                                is_company = {true}
+                                url = {this.state.url}
+                                text={"Issue"}
+                                title = {"Issue"} />
+                            </div></Col>
                         </Row>
                         <br />
                         <Title heading={3} style={{ margin: '8px 0', color: 'rgba(var(--semi-violet-5),1)' }} >Issue</Title>
