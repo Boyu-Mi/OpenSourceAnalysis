@@ -14,7 +14,9 @@ def get_repo(u_list=None):
     
     result = db.session.query(Repos).filter_by(repo_name=repo_name, owner_name=owner_name).first()
     if result is None:
+        print(result)
         return new_repo(u_list=u_list)
+    
     ret = {"success": True, "message": "success!", "time": result.time}
     res = {
         "id": result.id,

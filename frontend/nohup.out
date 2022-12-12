@@ -1,0 +1,30 @@
+ INFO  Accepting connections at http://localhost:3000
+ HTTP  12/11/2022 9:08:38 PM 117.136.87.167 GET /
+ HTTP  12/11/2022 9:08:38 PM 117.136.87.167 Returned 200 in 103 ms
+ HTTP  12/11/2022 9:08:38 PM 117.136.87.167 GET /static/css/main.84b4eded.css
+ HTTP  12/11/2022 9:08:38 PM 117.136.87.167 GET /static/js/main.0d7a5394.js
+ HTTP  12/11/2022 9:08:38 PM 117.136.87.167 Returned 304 in 5 ms
+ HTTP  12/11/2022 9:08:38 PM 117.136.87.167 Returned 200 in 11 ms
+ HTTP  12/11/2022 9:10:21 PM 117.136.87.167 GET /static/media/github.ae6be72cf13fe9aae905.jfif
+ HTTP  12/11/2022 9:10:21 PM 117.136.87.167 Returned 304 in 2 ms
+ HTTP  12/11/2022 9:11:50 PM 117.136.87.167 GET /
+ HTTP  12/11/2022 9:11:50 PM 117.136.87.167 Returned 304 in 1 ms
+ HTTP  12/11/2022 9:11:50 PM 117.136.87.167 GET /static/css/main.84b4eded.css
+ HTTP  12/11/2022 9:11:50 PM 117.136.87.167 Returned 304 in 1 ms
+ HTTP  12/11/2022 9:11:50 PM 117.136.87.167 GET /static/js/main.0d7a5394.js
+ HTTP  12/11/2022 9:11:50 PM 117.136.87.167 Returned 304 in 1 ms
+ HTTP  12/11/2022 9:11:50 PM 117.136.87.167 GET /favicon.ico
+ HTTP  12/11/2022 9:11:50 PM 117.136.87.167 Returned 200 in 2 ms
+ HTTP  12/11/2022 9:17:19 PM 183.202.101.246 GET /
+ HTTP  12/11/2022 9:17:19 PM 183.202.101.246 Returned 200 in 1 ms
+ HTTP  12/11/2022 9:17:19 PM 183.202.101.246 GET /static/js/main.0d7a5394.js
+ HTTP  12/11/2022 9:17:19 PM 183.202.101.246 GET /static/css/main.84b4eded.css
+ HTTP  12/11/2022 9:17:19 PM 183.202.101.246 Returned 200 in 2 ms
+ HTTP  12/11/2022 9:17:19 PM 183.202.101.246 Returned 200 in 1 ms
+ HTTP  12/11/2022 9:17:20 PM 183.202.101.246 GET /insight.png
+ HTTP  12/11/2022 9:17:20 PM 183.202.101.246 Returned 200 in 6 ms
+ HTTP  12/11/2022 9:18:30 PM 183.202.101.246 GET /static/media/github.ae6be72cf13fe9aae905.jfif
+ HTTP  12/11/2022 9:18:30 PM 183.202.101.246 Returned 200 in 1 ms
+
+ INFO  Gracefully shutting down. Please wait...
+ INFO  Accepting connections at http://localhost:5708

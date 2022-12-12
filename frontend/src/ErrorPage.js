@@ -9,7 +9,7 @@ export default function ErrorPage() {
                 title={'仓库链接有误'}
                 image={<IllustrationNoResult style={{width: 200, height: 200}}/>}
                 layout="horizontal"
-                description="你来到了没有知识存在的荒原……"
+                description="你在知识的荒原中迷失了方向……"
                 style={{width: 500, margin: 'auto', padding: 100,}}
             >
             </Empty>

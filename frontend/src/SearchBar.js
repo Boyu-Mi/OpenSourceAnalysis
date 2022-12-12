@@ -43,7 +43,7 @@ export default function SearchBar(props) {
         (
             (e) =>
             {
-                // console.log(e)
+                console.log(e)
             }
         )
     }
@@ -55,7 +55,8 @@ export default function SearchBar(props) {
                 <Row>
                     <Form.Input 
                         onChange={(str) => {changeStr(str)}}
-                        prefix={<IconSearch />} field='Try input a repo link!' placeholder='Dive into Github...' 
+                        prefix={<IconSearch />} field='Try input a repo link!' 
+                        placeholder="Dive into Github!" 
                     />
                 </Row>
             </div>

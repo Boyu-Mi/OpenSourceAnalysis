@@ -44,12 +44,12 @@ def update(u_list,data):
         return ret,404
 
     # company信息涉及的user太多了，在线获取的话要极其久（仅仅在<=1500个用户的情况下），老师只要求pytorch，不如提前update，随后的update就取消这一步
-    if update_company(repo_name,owner_name) == False:
-        ret["success"] = False
-        ret["message"] = "Update company failed!"
-        return ret,404
+    # if update_company(repo_name,owner_name) == False:
+    #     ret["success"] = False
+    #     ret["message"] = "Update company failed!"
+    #     return ret,404
 
-
+    print(ret)
 
     # update_repo_with_url(data.get("url"))
     return ret,200
@@ -88,7 +88,7 @@ def update_commit_by_time(repo_name,owner_name,data = {}):
     param = {"per_page":100,"page":page}
     dict={}
     data = {}
-    while(True and page <5): # 只能查看最近500条，若要更改请改page参数
+    while(True and page < 1): # 只能查看最近500条，若要更改请改page参数
         # page -= 1
         page += 1
         param = {"per_page":100,"page":page}

@@ -1,0 +1,539 @@
+[2022-12-11 20:21:38 +0800] [47207] [DEBUG] Current configuration:
+  config: server_config.py
+  wsgi_app: None
+  bind: ['0.0.0.0:5001']
+  backlog: 2048
+  workers: 4
+  worker_class: gevent
+  threads: 1
+  worker_connections: 1000
+  max_requests: 0
+  max_requests_jitter: 0
+  timeout: 30
+  graceful_timeout: 30
+  keepalive: 2
+  limit_request_line: 4094
+  limit_request_fields: 100
+  limit_request_field_size: 8190
+  reload: False
+  reload_engine: auto
+  reload_extra_files: []
+  spew: False
+  check_config: False
+  print_config: False
+  preload_app: False
+  sendfile: None
+  reuse_port: False
+  chdir: /home/kenshin/OpenSourceAnalysis-backend
+  daemon: True
+  raw_env: []
+  pidfile: log/gunicorn.pid
+  worker_tmp_dir: None
+  user: 997
+  group: 997
+  umask: 0
+  initgroups: False
+  tmp_upload_dir: None
+  secure_scheme_headers: {'X-FORWARDED-PROTOCOL': 'ssl', 'X-FORWARDED-PROTO': 'https', 'X-FORWARDED-SSL': 'on'}
+  forwarded_allow_ips: ['127.0.0.1']
+  accesslog: log/access.log
+  disable_redirect_access_to_syslog: False
+  access_log_format: %(h)s %(l)s %(u)s %(t)s "%(r)s" %(s)s %(b)s "%(f)s" "%(a)s"
+  errorlog: log/debug.log
+  loglevel: debug
+  capture_output: False
+  logger_class: gunicorn.glogging.Logger
+  logconfig: None
+  logconfig_dict: {}
+  syslog_addr: udp://localhost:514
+  syslog: False
+  syslog_prefix: None
+  syslog_facility: user
+  enable_stdio_inheritance: False
+  statsd_host: None
+  dogstatsd_tags: 
+  statsd_prefix: 
+  proc_name: None
+  default_proc_name: app:app
+  pythonpath: None
+  paste: None
+  on_starting: <function OnStarting.on_starting at 0x7f785a9c1e10>
+  on_reload: <function OnReload.on_reload at 0x7f785a9c1f30>
+  when_ready: <function WhenReady.when_ready at 0x7f785a9c2050>
+  pre_fork: <function Prefork.pre_fork at 0x7f785a9c2170>
+  post_fork: <function Postfork.post_fork at 0x7f785a9c2290>
+  post_worker_init: <function PostWorkerInit.post_worker_init at 0x7f785a9c23b0>
+  worker_int: <function WorkerInt.worker_int at 0x7f785a9c24d0>
+  worker_abort: <function WorkerAbort.worker_abort at 0x7f785a9c25f0>
+  pre_exec: <function PreExec.pre_exec at 0x7f785a9c2710>
+  pre_request: <function PreRequest.pre_request at 0x7f785a9c2830>
+  post_request: <function PostRequest.post_request at 0x7f785a9c28c0>
+  child_exit: <function ChildExit.child_exit at 0x7f785a9c29e0>
+  worker_exit: <function WorkerExit.worker_exit at 0x7f785a9c2b00>
+  nworkers_changed: <function NumWorkersChanged.nworkers_changed at 0x7f785a9c2c20>
+  on_exit: <function OnExit.on_exit at 0x7f785a9c2d40>
+  proxy_protocol: False
+  proxy_allow_ips: ['127.0.0.1']
+  keyfile: None
+  certfile: None
+  ssl_version: 2
+  cert_reqs: 0
+  ca_certs: None
+  suppress_ragged_eofs: True
+  do_handshake_on_connect: False
+  ciphers: None
+  raw_paste_global_conf: []
+  strip_header_spaces: False
+[2022-12-11 20:21:38 +0800] [47207] [INFO] Starting gunicorn 20.1.0
+[2022-12-11 20:21:38 +0800] [47207] [DEBUG] Arbiter booted
+[2022-12-11 20:21:38 +0800] [47207] [INFO] Listening at: http://0.0.0.0:5001 (47207)
+[2022-12-11 20:21:38 +0800] [47207] [INFO] Using worker: gevent
+[2022-12-11 20:21:38 +0800] [47209] [INFO] Booting worker with pid: 47209
+[2022-12-11 20:21:38 +0800] [47225] [INFO] Booting worker with pid: 47225
+[2022-12-11 20:21:38 +0800] [47226] [INFO] Booting worker with pid: 47226
+[2022-12-11 20:21:38 +0800] [47227] [INFO] Booting worker with pid: 47227
+[2022-12-11 20:21:38 +0800] [47207] [DEBUG] 4 workers
+[2022-12-11 20:21:45 +0800] [47209] [DEBUG] OPTIONS /get_repo/
+[2022-12-11 20:21:45 +0800] [47209] [DEBUG] POST /get_repo/
+[2022-12-11 20:21:45,870] ERROR in app: Exception on /get_repo/ [POST]
+Traceback (most recent call last):
+  File "/home/kenshin/OpenSourceAnalysis-backend/venv/lib/python3.10/site-packages/flask/app.py", line 2525, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/kenshin/OpenSourceAnalysis-backend/venv/lib/python3.10/site-packages/flask/app.py", line 1822, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/kenshin/OpenSourceAnalysis-backend/venv/lib/python3.10/site-packages/flask_cors/extension.py", line 165, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+  File "/home/kenshin/OpenSourceAnalysis-backend/venv/lib/python3.10/site-packages/flask/app.py", line 1820, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/kenshin/OpenSourceAnalysis-backend/venv/lib/python3.10/site-packages/flask/app.py", line 1796, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+  File "/home/kenshin/OpenSourceAnalysis-backend/decorators.py", line 93, in wrapper
+    url = url.strip('/')
+AttributeError: 'NoneType' object has no attribute 'strip'
+[2022-12-11 20:21:51 +0800] [47227] [DEBUG] OPTIONS /get_repo/
+[2022-12-11 20:21:51 +0800] [47227] [DEBUG] POST /get_repo/
+[2022-12-11 20:21:57 +0800] [47225] [DEBUG] POST /get_repo/
+[2022-12-11 20:22:04 +0800] [47227] [DEBUG] OPTIONS /get_repo/
+[2022-12-11 20:22:04 +0800] [47227] [DEBUG] POST /get_repo/
+[2022-12-11 20:22:04,822] ERROR in app: Exception on /get_repo/ [POST]
+Traceback (most recent call last):
+  File "/home/kenshin/OpenSourceAnalysis-backend/venv/lib/python3.10/site-packages/flask/app.py", line 2525, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/kenshin/OpenSourceAnalysis-backend/venv/lib/python3.10/site-packages/flask/app.py", line 1822, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/kenshin/OpenSourceAnalysis-backend/venv/lib/python3.10/site-packages/flask_cors/extension.py", line 165, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+  File "/home/kenshin/OpenSourceAnalysis-backend/venv/lib/python3.10/site-packages/flask/app.py", line 1820, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/kenshin/OpenSourceAnalysis-backend/venv/lib/python3.10/site-packages/flask/app.py", line 1796, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+  File "/home/kenshin/OpenSourceAnalysis-backend/decorators.py", line 93, in wrapper
+    url = url.strip('/')
+AttributeError: 'NoneType' object has no attribute 'strip'
+[2022-12-11 20:22:14 +0800] [47225] [DEBUG] OPTIONS /get_repo/
+[2022-12-11 20:22:14 +0800] [47225] [DEBUG] POST /get_repo/
+[2022-12-11 20:22:20 +0800] [47226] [DEBUG] OPTIONS /get_repo/
+[2022-12-11 20:22:20 +0800] [47226] [DEBUG] POST /get_repo/
+[2022-12-11 20:22:20 +0800] [47227] [DEBUG] OPTIONS /get_repo/
+[2022-12-11 20:22:20 +0800] [47227] [DEBUG] POST /get_repo/
+[2022-12-11 20:22:21 +0800] [47226] [DEBUG] OPTIONS /get_commit_by_time/
+[2022-12-11 20:22:21 +0800] [47226] [DEBUG] GET /cloud/0/https://github.com/pytorch/pytorch
+[2022-12-11 20:22:21 +0800] [47225] [DEBUG] OPTIONS /get_contributors/core/
+[2022-12-11 20:22:21 +0800] [47209] [DEBUG] OPTIONS /get_company_stargazers/
+[2022-12-11 20:22:21 +0800] [47225] [DEBUG] OPTIONS /get_company_issues/
+[2022-12-11 20:22:21 +0800] [47209] [DEBUG] OPTIONS /get_company_commits/
+[2022-12-11 20:22:21 +0800] [47225] [DEBUG] POST /get_commit_by_time/
+[2022-12-11 20:22:21 +0800] [47209] [DEBUG] POST /get_company_stargazers/
+[2022-12-11 20:22:21 +0800] [47209] [DEBUG] POST /get_company_issues/
+[2022-12-11 20:22:22 +0800] [47225] [DEBUG] POST /get_company_commits/
+[2022-12-11 20:22:22 +0800] [47225] [DEBUG] POST /get_contributors/core/
+[2022-12-11 20:22:26 +0800] [47226] [DEBUG] OPTIONS /get_contributors/all/
+[2022-12-11 20:22:26 +0800] [47226] [DEBUG] POST /get_contributors/all/
+[2022-12-11 20:22:29 +0800] [47227] [DEBUG] OPTIONS /get_repo/
+[2022-12-11 20:22:29 +0800] [47227] [DEBUG] POST /get_repo/
+[2022-12-11 20:22:29,461] ERROR in app: Exception on /get_repo/ [POST]
+Traceback (most recent call last):
+  File "/home/kenshin/OpenSourceAnalysis-backend/venv/lib/python3.10/site-packages/flask/app.py", line 2525, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/kenshin/OpenSourceAnalysis-backend/venv/lib/python3.10/site-packages/flask/app.py", line 1822, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/kenshin/OpenSourceAnalysis-backend/venv/lib/python3.10/site-packages/flask_cors/extension.py", line 165, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+  File "/home/kenshin/OpenSourceAnalysis-backend/venv/lib/python3.10/site-packages/flask/app.py", line 1820, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/kenshin/OpenSourceAnalysis-backend/venv/lib/python3.10/site-packages/flask/app.py", line 1796, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+  File "/home/kenshin/OpenSourceAnalysis-backend/decorators.py", line 93, in wrapper
+    url = url.strip('/')
+AttributeError: 'NoneType' object has no attribute 'strip'
+[2022-12-11 20:22:39 +0800] [47225] [DEBUG] OPTIONS /get_repo/
+[2022-12-11 20:22:39 +0800] [47225] [DEBUG] POST /get_repo/
+[2022-12-11 20:23:45 +0800] [47227] [DEBUG] OPTIONS /get_repo/
+[2022-12-11 20:23:45 +0800] [47227] [DEBUG] POST /get_repo/
+[2022-12-11 20:26:25 +0800] [47209] [DEBUG] OPTIONS /get_commit_by_time/
+[2022-12-11 20:26:25 +0800] [47227] [DEBUG] OPTIONS /get_contributors/core/
+[2022-12-11 20:26:25 +0800] [47225] [DEBUG] OPTIONS /get_contributors/all/
+[2022-12-11 20:26:25 +0800] [47225] [DEBUG] OPTIONS /get_company_commits/
+[2022-12-11 20:26:25 +0800] [47227] [DEBUG] OPTIONS /get_company_issues/
+[2022-12-11 20:26:25 +0800] [47227] [DEBUG] OPTIONS /get_company_stargazers/
+[2022-12-11 20:26:25 +0800] [47209] [DEBUG] POST /get_commit_by_time/
+[2022-12-11 20:26:25 +0800] [47225] [DEBUG] POST /get_contributors/all/
+[2022-12-11 20:26:25 +0800] [47227] [DEBUG] POST /get_contributors/core/
+[2022-12-11 20:26:25 +0800] [47227] [DEBUG] POST /get_company_stargazers/
+[2022-12-11 20:26:25 +0800] [47225] [DEBUG] POST /get_company_commits/
+[2022-12-11 20:26:25 +0800] [47227] [DEBUG] POST /get_company_issues/
+[2022-12-11 20:26:25 +0800] [47226] [DEBUG] GET /cloud/0/https://github.com/pytorch/pytorch
+[2022-12-11 20:26:56 +0800] [47225] [DEBUG] OPTIONS /get_repo/
+[2022-12-11 20:26:56 +0800] [47225] [DEBUG] POST /get_repo/
+[2022-12-11 20:26:56,872] ERROR in app: Exception on /get_repo/ [POST]
+Traceback (most recent call last):
+  File "/home/kenshin/OpenSourceAnalysis-backend/venv/lib/python3.10/site-packages/flask/app.py", line 2525, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/kenshin/OpenSourceAnalysis-backend/venv/lib/python3.10/site-packages/flask/app.py", line 1822, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/kenshin/OpenSourceAnalysis-backend/venv/lib/python3.10/site-packages/flask_cors/extension.py", line 165, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+  File "/home/kenshin/OpenSourceAnalysis-backend/venv/lib/python3.10/site-packages/flask/app.py", line 1820, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/kenshin/OpenSourceAnalysis-backend/venv/lib/python3.10/site-packages/flask/app.py", line 1796, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+  File "/home/kenshin/OpenSourceAnalysis-backend/decorators.py", line 93, in wrapper
+    url = url.strip('/')
+AttributeError: 'NoneType' object has no attribute 'strip'
+[2022-12-11 20:26:58 +0800] [47225] [DEBUG] POST /get_repo/
+[2022-12-11 20:27:04 +0800] [47209] [DEBUG] OPTIONS /get_repo/
+[2022-12-11 20:27:04 +0800] [47209] [DEBUG] POST /get_repo/
+[2022-12-11 20:27:48 +0800] [47226] [DEBUG] OPTIONS /get_repo/
+[2022-12-11 20:27:48 +0800] [47226] [DEBUG] POST /get_repo/
+[2022-12-11 20:27:49 +0800] [47226] [DEBUG] POST /get_repo/
+[2022-12-11 20:27:50 +0800] [47225] [DEBUG] POST /get_repo/
+[2022-12-11 20:27:50 +0800] [47226] [DEBUG] POST /get_repo/
+[2022-12-11 20:27:50 +0800] [47209] [DEBUG] POST /get_repo/
+[2022-12-11 20:27:50 +0800] [47226] [DEBUG] POST /get_repo/
+[2022-12-11 20:27:50 +0800] [47225] [DEBUG] POST /get_repo/
+[2022-12-11 20:27:51 +0800] [47225] [DEBUG] POST /get_repo/
+[2022-12-11 20:27:51 +0800] [47225] [DEBUG] OPTIONS /get_commit_by_time/
+[2022-12-11 20:27:51 +0800] [47226] [DEBUG] OPTIONS /get_contributors/all/
+[2022-12-11 20:27:51 +0800] [47225] [DEBUG] OPTIONS /get_company_commits/
+[2022-12-11 20:27:51 +0800] [47209] [DEBUG] OPTIONS /get_contributors/core/
+[2022-12-11 20:27:51 +0800] [47226] [DEBUG] OPTIONS /get_company_stargazers/
+[2022-12-11 20:27:51 +0800] [47226] [DEBUG] OPTIONS /get_company_issues/
+[2022-12-11 20:27:51 +0800] [47226] [DEBUG] POST /get_repo/
+[2022-12-11 20:27:51 +0800] [47225] [DEBUG] POST /get_contributors/all/
+[2022-12-11 20:27:51 +0800] [47209] [DEBUG] POST /get_company_stargazers/
+[2022-12-11 20:27:51 +0800] [47225] [DEBUG] POST /get_contributors/all/
+[2022-12-11 20:27:51 +0800] [47227] [DEBUG] POST /get_commit_by_time/
+[2022-12-11 20:27:51 +0800] [47226] [DEBUG] POST /get_contributors/core/
+[2022-12-11 20:27:51 +0800] [47226] [DEBUG] POST /get_company_commits/
+[2022-12-11 20:27:51 +0800] [47225] [DEBUG] POST /get_company_stargazers/
+[2022-12-11 20:27:51 +0800] [47209] [DEBUG] OPTIONS /get_commit_by_time/
+[2022-12-11 20:27:51 +0800] [47226] [DEBUG] OPTIONS /get_contributors/core/
+[2022-12-11 20:27:52 +0800] [47225] [DEBUG] POST /get_company_commits/
+[2022-12-11 20:27:52 +0800] [47209] [DEBUG] OPTIONS /get_company_issues/
+[2022-12-11 20:27:52 +0800] [47226] [DEBUG] POST /get_company_issues/
+[2022-12-11 20:27:52 +0800] [47226] [DEBUG] POST /get_commit_by_time/
+[2022-12-11 20:27:52 +0800] [47225] [DEBUG] POST /get_contributors/all/
+[2022-12-11 20:27:52 +0800] [47209] [DEBUG] POST /get_contributors/core/
+[2022-12-11 20:27:52 +0800] [47225] [DEBUG] POST /get_company_stargazers/
+[2022-12-11 20:27:52 +0800] [47225] [DEBUG] POST /get_company_issues/
+[2022-12-11 20:27:52 +0800] [47209] [DEBUG] POST /get_repo/
+[2022-12-11 20:27:52 +0800] [47227] [DEBUG] POST /get_commit_by_time/
+[2022-12-11 20:27:52 +0800] [47225] [DEBUG] POST /get_contributors/all/
+[2022-12-11 20:27:52 +0800] [47226] [DEBUG] POST /get_company_commits/
+[2022-12-11 20:27:52 +0800] [47209] [DEBUG] POST /get_contributors/core/
+[2022-12-11 20:27:52 +0800] [47225] [DEBUG] POST /get_company_stargazers/
+[2022-12-11 20:27:52 +0800] [47225] [DEBUG] POST /get_company_commits/
+[2022-12-11 20:27:52 +0800] [47209] [DEBUG] POST /get_company_issues/
+[2022-12-11 20:27:52 +0800] [47226] [DEBUG] POST /get_commit_by_time/
+[2022-12-11 20:27:52 +0800] [47225] [DEBUG] POST /get_contributors/core/
+[2022-12-11 20:27:52 +0800] [47227] [DEBUG] POST /get_company_issues/
+[2022-12-11 20:27:52 +0800] [47225] [DEBUG] POST /get_contributors/all/
+[2022-12-11 20:27:52 +0800] [47209] [DEBUG] POST /get_company_stargazers/
+[2022-12-11 20:27:52 +0800] [47225] [DEBUG] POST /get_contributors/core/
+[2022-12-11 20:27:52 +0800] [47225] [DEBUG] POST /get_company_commits/
+[2022-12-11 20:27:52 +0800] [47227] [DEBUG] POST /get_company_issues/
+[2022-12-11 20:27:52 +0800] [47209] [DEBUG] POST /get_commit_by_time/
+[2022-12-11 20:27:52 +0800] [47225] [DEBUG] POST /get_repo/
+[2022-12-11 20:27:52 +0800] [47226] [DEBUG] POST /get_commit_by_time/
+[2022-12-11 20:27:52 +0800] [47225] [DEBUG] POST /get_contributors/all/
+[2022-12-11 20:27:52 +0800] [47227] [DEBUG] POST /get_contributors/core/
+[2022-12-11 20:27:52 +0800] [47225] [DEBUG] POST /get_company_stargazers/
+[2022-12-11 20:27:52 +0800] [47227] [DEBUG] POST /get_company_issues/
+[2022-12-11 20:27:52 +0800] [47225] [DEBUG] POST /get_company_commits/
+[2022-12-11 20:27:52 +0800] [47225] [DEBUG] POST /get_commit_by_time/
+[2022-12-11 20:27:52 +0800] [47227] [DEBUG] POST /get_contributors/all/
+[2022-12-11 20:27:52 +0800] [47227] [DEBUG] POST /get_company_stargazers/
+[2022-12-11 20:27:52 +0800] [47226] [DEBUG] POST /get_company_commits/
+[2022-12-11 20:27:52 +0800] [47209] [DEBUG] POST /get_company_issues/
+[2022-12-11 20:27:53 +0800] [47225] [DEBUG] POST /get_contributors/core/
+[2022-12-11 20:27:56 +0800] [47225] [DEBUG] POST /get_commit_by_time/
+[2022-12-11 20:27:56 +0800] [47226] [DEBUG] POST /get_contributors/all/
+[2022-12-11 20:27:56 +0800] [47227] [DEBUG] POST /get_company_stargazers/
+[2022-12-11 20:27:56 +0800] [47227] [DEBUG] POST /get_company_commits/
+[2022-12-11 20:27:56 +0800] [47227] [DEBUG] POST /get_contributors/core/
+[2022-12-11 20:27:56 +0800] [47227] [DEBUG] POST /get_company_issues/
+[2022-12-11 20:28:50 +0800] [47227] [DEBUG] OPTIONS /get_repo/
+[2022-12-11 20:28:50 +0800] [47227] [DEBUG] POST /get_repo/
+[2022-12-11 20:28:52 +0800] [47227] [DEBUG] OPTIONS /get_commit_by_time/
+[2022-12-11 20:28:52 +0800] [47209] [DEBUG] OPTIONS /get_contributors/all/
+[2022-12-11 20:28:52 +0800] [47226] [DEBUG] OPTIONS /get_contributors/core/
+[2022-12-11 20:28:52 +0800] [47209] [DEBUG] OPTIONS /get_company_stargazers/
+[2022-12-11 20:28:52 +0800] [47227] [DEBUG] OPTIONS /get_company_commits/
+[2022-12-11 20:28:52 +0800] [47209] [DEBUG] OPTIONS /get_company_issues/
+[2022-12-11 20:28:52 +0800] [47209] [DEBUG] POST /get_commit_by_time/
+[2022-12-11 20:28:52 +0800] [47209] [DEBUG] POST /get_contributors/all/
+[2022-12-11 20:28:52 +0800] [47226] [DEBUG] POST /get_contributors/core/
+[2022-12-11 20:28:52 +0800] [47226] [DEBUG] GET /cloud/undefined/https://github.com/facebook/react-native
+[2022-12-11 20:28:52 +0800] [47209] [DEBUG] POST /get_company_stargazers/
+[2022-12-11 20:28:52 +0800] [47209] [DEBUG] POST /get_company_commits/
+[2022-12-11 20:28:52 +0800] [47227] [DEBUG] POST /get_company_issues/
+[2022-12-11 20:53:41 +0800] [47225] [DEBUG] Ignored premature client disconnection. No more data after: b'\x03\x00\x00\x13\x0e\xe0\x00\x00\x00\x00\x00\x01\x00\x08\x00\x02\x00\x00\x00'
+[2022-12-11 21:08:44 +0800] [47225] [DEBUG] OPTIONS /get_repo/
+[2022-12-11 21:08:44 +0800] [47225] [DEBUG] POST /get_repo/
+[2022-12-11 21:08:50 +0800] [47225] [DEBUG] OPTIONS /get_company_stargazers/
+[2022-12-11 21:08:50 +0800] [47225] [DEBUG] OPTIONS /get_company_commits/
+[2022-12-11 21:08:50 +0800] [47225] [DEBUG] OPTIONS /get_contributors/core/
+[2022-12-11 21:08:50 +0800] [47225] [DEBUG] OPTIONS /get_company_issues/
+[2022-12-11 21:08:50 +0800] [47225] [DEBUG] POST /get_company_stargazers/
+[2022-12-11 21:08:50 +0800] [47225] [DEBUG] POST /get_contributors/core/
+[2022-12-11 21:08:50 +0800] [47225] [DEBUG] POST /get_company_commits/
+[2022-12-11 21:08:50 +0800] [47225] [DEBUG] POST /get_company_issues/
+[2022-12-11 21:08:50 +0800] [47209] [DEBUG] OPTIONS /get_commit_by_time/
+[2022-12-11 21:08:50 +0800] [47226] [DEBUG] OPTIONS /get_contributors/all/
+[2022-12-11 21:08:50 +0800] [47227] [DEBUG] GET /cloud/0/https://github.com/pytorch/pytorch
+[2022-12-11 21:08:51 +0800] [47209] [DEBUG] POST /get_commit_by_time/
+[2022-12-11 21:08:51 +0800] [47226] [DEBUG] POST /get_contributors/all/
+[2022-12-11 21:10:22 +0800] [47226] [DEBUG] OPTIONS /get_contributors/all/
+[2022-12-11 21:10:22 +0800] [47225] [DEBUG] OPTIONS /get_company_stargazers/
+[2022-12-11 21:10:22 +0800] [47226] [DEBUG] OPTIONS /get_commit_by_time/
+[2022-12-11 21:10:22 +0800] [47226] [DEBUG] OPTIONS /get_contributors/core/
+[2022-12-11 21:10:22 +0800] [47225] [DEBUG] OPTIONS /get_company_commits/
+[2022-12-11 21:10:22 +0800] [47225] [DEBUG] OPTIONS /get_company_issues/
+[2022-12-11 21:10:22 +0800] [47225] [DEBUG] POST /get_company_stargazers/
+[2022-12-11 21:10:22 +0800] [47226] [DEBUG] POST /get_company_commits/
+[2022-12-11 21:10:22 +0800] [47225] [DEBUG] POST /get_contributors/all/
+[2022-12-11 21:10:22 +0800] [47225] [DEBUG] POST /get_company_issues/
+[2022-12-11 21:10:22 +0800] [47226] [DEBUG] POST /get_contributors/core/
+[2022-12-11 21:10:22 +0800] [47226] [DEBUG] POST /get_commit_by_time/
+[2022-12-11 21:12:38 +0800] [47225] [DEBUG] OPTIONS /get_repo/
+[2022-12-11 21:12:39 +0800] [47225] [DEBUG] POST /get_repo/
+[2022-12-11 21:12:47 +0800] [47226] [DEBUG] OPTIONS /get_commit_by_time/
+[2022-12-11 21:12:47 +0800] [47226] [DEBUG] OPTIONS /get_contributors/core/
+[2022-12-11 21:12:47 +0800] [47209] [DEBUG] OPTIONS /get_contributors/all/
+[2022-12-11 21:12:47 +0800] [47226] [DEBUG] OPTIONS /get_company_commits/
+[2022-12-11 21:12:47 +0800] [47226] [DEBUG] OPTIONS /get_company_issues/
+[2022-12-11 21:12:47 +0800] [47227] [DEBUG] OPTIONS /get_company_stargazers/
+[2022-12-11 21:12:47 +0800] [47226] [DEBUG] POST /get_commit_by_time/
+[2022-12-11 21:12:47 +0800] [47209] [DEBUG] POST /get_company_commits/
+[2022-12-11 21:12:47 +0800] [47227] [DEBUG] POST /get_company_stargazers/
+[2022-12-11 21:12:47 +0800] [47226] [DEBUG] POST /get_contributors/all/
+[2022-12-11 21:12:47 +0800] [47226] [DEBUG] POST /get_company_issues/
+[2022-12-11 21:12:47 +0800] [47226] [DEBUG] POST /get_contributors/core/
+[2022-12-11 21:12:53 +0800] [47209] [DEBUG] GET /cloud/undefined/https://github.com/QAQdev/Dijkstra_Algorithm_With_Heap_Optimization
+[2022-12-11 21:17:47 +0800] [47225] [DEBUG] OPTIONS /get_repo/
+[2022-12-11 21:17:47 +0800] [47225] [DEBUG] POST /get_repo/
+[2022-12-11 21:17:55 +0800] [47226] [DEBUG] OPTIONS /get_commit_by_time/
+[2022-12-11 21:17:55 +0800] [47227] [DEBUG] OPTIONS /get_company_stargazers/
+[2022-12-11 21:17:55 +0800] [47226] [DEBUG] OPTIONS /get_company_issues/
+[2022-12-11 21:17:55 +0800] [47225] [DEBUG] OPTIONS /get_company_commits/
+[2022-12-11 21:17:55 +0800] [47226] [DEBUG] POST /get_commit_by_time/
+[2022-12-11 21:17:55 +0800] [47226] [DEBUG] OPTIONS /get_contributors/core/
+[2022-12-11 21:17:55 +0800] [47226] [DEBUG] OPTIONS /get_contributors/all/
+[2022-12-11 21:17:55 +0800] [47227] [DEBUG] POST /get_company_issues/
+[2022-12-11 21:17:55 +0800] [47225] [DEBUG] POST /get_contributors/core/
+[2022-12-11 21:17:55 +0800] [47225] [DEBUG] GET /cloud/0/https://github.com/pytorch/pytorch
+[2022-12-11 21:18:02 +0800] [47226] [DEBUG] POST /get_company_commits/
+[2022-12-11 21:18:02 +0800] [47226] [DEBUG] POST /get_company_stargazers/
+[2022-12-11 21:18:02 +0800] [47226] [DEBUG] POST /get_contributors/all/
+[2022-12-11 21:18:29 +0800] [47209] [DEBUG] OPTIONS /get_commit_by_time/
+[2022-12-11 21:18:29 +0800] [47227] [DEBUG] OPTIONS /get_contributors/all/
+[2022-12-11 21:18:29 +0800] [47209] [DEBUG] OPTIONS /get_company_commits/
+[2022-12-11 21:18:29 +0800] [47209] [DEBUG] OPTIONS /get_contributors/core/
+[2022-12-11 21:18:29 +0800] [47209] [DEBUG] OPTIONS /get_company_stargazers/
+[2022-12-11 21:18:29 +0800] [47209] [DEBUG] OPTIONS /get_company_issues/
+[2022-12-11 21:18:29 +0800] [47209] [DEBUG] POST /get_commit_by_time/
+[2022-12-11 21:18:29 +0800] [47227] [DEBUG] POST /get_contributors/all/
+[2022-12-11 21:18:35 +0800] [47209] [DEBUG] POST /get_company_issues/
+[2022-12-11 21:18:35 +0800] [47209] [DEBUG] POST /get_company_stargazers/
+[2022-12-11 21:18:35 +0800] [47209] [DEBUG] POST /get_company_commits/
+[2022-12-11 21:18:35 +0800] [47209] [DEBUG] POST /get_contributors/core/
+[2022-12-11 21:18:45 +0800] [47226] [DEBUG] GET /get_user/Boyu-Mi/
+[2022-12-11 21:20:02 +0800] [47225] [DEBUG] GET /cloud/undefined/https://github.com/QAQdev/Dijkstra_Algorithm_With_Heap_Optimization
+[2022-12-11 21:20:04 +0800] [47209] [DEBUG] OPTIONS /get_commit_by_time/
+[2022-12-11 21:20:04 +0800] [47227] [DEBUG] OPTIONS /get_contributors/all/
+[2022-12-11 21:20:04 +0800] [47226] [DEBUG] OPTIONS /get_company_commits/
+[2022-12-11 21:20:04 +0800] [47227] [DEBUG] OPTIONS /get_contributors/core/
+[2022-12-11 21:20:04 +0800] [47227] [DEBUG] OPTIONS /get_company_issues/
+[2022-12-11 21:20:04 +0800] [47226] [DEBUG] OPTIONS /get_company_stargazers/
+[2022-12-11 21:20:04 +0800] [47209] [DEBUG] POST /get_commit_by_time/
+[2022-12-11 21:20:04 +0800] [47227] [DEBUG] POST /get_contributors/all/
+[2022-12-11 21:20:04 +0800] [47226] [DEBUG] POST /get_company_commits/
+[2022-12-11 21:20:04 +0800] [47227] [DEBUG] POST /get_contributors/core/
+[2022-12-11 21:20:04 +0800] [47227] [DEBUG] POST /get_company_issues/
+[2022-12-11 21:20:04 +0800] [47226] [DEBUG] POST /get_company_stargazers/
+[2022-12-11 21:20:05 +0800] [47225] [DEBUG] Closing connection. 
+[2022-12-11 21:20:40 +0800] [47226] [DEBUG] OPTIONS /get_commit_by_time/
+[2022-12-11 21:20:40 +0800] [47226] [DEBUG] OPTIONS /get_contributors/all/
+[2022-12-11 21:20:40 +0800] [47227] [DEBUG] OPTIONS /get_company_commits/
+[2022-12-11 21:20:40 +0800] [47226] [DEBUG] OPTIONS /get_contributors/core/
+[2022-12-11 21:20:40 +0800] [47226] [DEBUG] POST /get_commit_by_time/
+[2022-12-11 21:20:40 +0800] [47227] [DEBUG] POST /get_company_commits/
+[2022-12-11 21:20:40 +0800] [47227] [DEBUG] OPTIONS /get_company_stargazers/
+[2022-12-11 21:20:40 +0800] [47227] [DEBUG] OPTIONS /get_company_issues/
+[2022-12-11 21:20:40 +0800] [47226] [DEBUG] POST /get_contributors/core/
+[2022-12-11 21:20:40 +0800] [47226] [DEBUG] POST /get_contributors/all/
+[2022-12-11 21:20:40 +0800] [47227] [DEBUG] POST /get_company_stargazers/
+[2022-12-11 21:20:40 +0800] [47227] [DEBUG] POST /get_company_issues/
+[2022-12-11 21:21:21 +0800] [47226] [DEBUG] GET /get_user/Boyu-Mi/
+[2022-12-11 21:21:21 +0800] [47226] [DEBUG] Closing connection. 
+[2022-12-11 21:27:04 +0800] [47227] [DEBUG] OPTIONS /get_commit_by_time/
+[2022-12-11 21:27:04 +0800] [47209] [DEBUG] OPTIONS /get_contributors/all/
+[2022-12-11 21:27:04 +0800] [47226] [DEBUG] OPTIONS /get_contributors/core/
+[2022-12-11 21:27:05 +0800] [47209] [DEBUG] OPTIONS /get_company_stargazers/
+[2022-12-11 21:27:05 +0800] [47227] [DEBUG] OPTIONS /get_company_commits/
+[2022-12-11 21:27:05 +0800] [47226] [DEBUG] OPTIONS /get_company_issues/
+[2022-12-11 21:27:05 +0800] [47227] [DEBUG] POST /get_commit_by_time/
+[2022-12-11 21:27:05 +0800] [47209] [DEBUG] POST /get_contributors/all/
+[2022-12-11 21:27:05 +0800] [47226] [DEBUG] POST /get_contributors/core/
+[2022-12-11 21:27:05 +0800] [47209] [DEBUG] POST /get_company_stargazers/
+[2022-12-11 21:27:05 +0800] [47227] [DEBUG] POST /get_company_commits/
+[2022-12-11 21:27:05 +0800] [47226] [DEBUG] POST /get_company_issues/
+[2022-12-11 21:27:09 +0800] [47226] [DEBUG] OPTIONS /get_repo/
+[2022-12-11 21:27:10 +0800] [47226] [DEBUG] POST /get_repo/
+[2022-12-11 21:27:10 +0800] [47226] [DEBUG] OPTIONS /get_commit_by_time/
+[2022-12-11 21:27:10 +0800] [47226] [DEBUG] POST /get_commit_by_time/
+[2022-12-11 21:27:10 +0800] [47225] [DEBUG] OPTIONS /get_contributors/all/
+[2022-12-11 21:27:10 +0800] [47209] [DEBUG] OPTIONS /get_contributors/core/
+[2022-12-11 21:27:10 +0800] [47225] [DEBUG] OPTIONS /get_company_stargazers/
+[2022-12-11 21:27:10 +0800] [47209] [DEBUG] OPTIONS /get_company_commits/
+[2022-12-11 21:27:10 +0800] [47209] [DEBUG] POST /get_company_issues/
+[2022-12-11 21:27:10 +0800] [47209] [DEBUG] POST /get_contributors/core/
+[2022-12-11 21:27:10 +0800] [47225] [DEBUG] POST /get_contributors/all/
+[2022-12-11 21:27:10 +0800] [47225] [DEBUG] POST /get_company_stargazers/
+[2022-12-11 21:27:10 +0800] [47209] [DEBUG] POST /get_company_commits/
+[2022-12-11 21:27:15 +0800] [47225] [DEBUG] OPTIONS /get_commit_by_time/
+[2022-12-11 21:27:15 +0800] [47227] [DEBUG] OPTIONS /get_commit_by_time/
+[2022-12-11 21:27:15 +0800] [47225] [DEBUG] POST /get_contributors/all/
+[2022-12-11 21:27:15 +0800] [47227] [DEBUG] POST /get_contributors/all/
+[2022-12-11 21:27:15 +0800] [47225] [DEBUG] POST /get_company_stargazers/
+[2022-12-11 21:27:15 +0800] [47209] [DEBUG] POST /get_company_stargazers/
+[2022-12-11 21:27:15 +0800] [47225] [DEBUG] POST /get_company_commits/
+[2022-12-11 21:27:15 +0800] [47227] [DEBUG] POST /get_company_commits/
+[2022-12-11 21:27:15 +0800] [47225] [DEBUG] OPTIONS /get_company_issues/
+[2022-12-11 21:27:15 +0800] [47227] [DEBUG] OPTIONS /get_company_issues/
+[2022-12-11 21:27:15 +0800] [47209] [DEBUG] POST /get_commit_by_time/
+[2022-12-11 21:27:15 +0800] [47225] [DEBUG] POST /get_commit_by_time/
+[2022-12-11 21:27:15 +0800] [47227] [DEBUG] POST /get_company_issues/
+[2022-12-11 21:27:15 +0800] [47225] [DEBUG] POST /get_company_issues/
+[2022-12-11 21:27:36 +0800] [47227] [DEBUG] OPTIONS /get_contributors/all/
+[2022-12-11 21:27:36 +0800] [47226] [DEBUG] OPTIONS /get_commit_by_time/
+[2022-12-11 21:27:36 +0800] [47227] [DEBUG] OPTIONS /get_company_commits/
+[2022-12-11 21:27:36 +0800] [47226] [DEBUG] OPTIONS /get_company_stargazers/
+[2022-12-11 21:27:36 +0800] [47226] [DEBUG] OPTIONS /get_contributors/core/
+[2022-12-11 21:27:36 +0800] [47226] [DEBUG] OPTIONS /get_company_issues/
+[2022-12-11 21:27:36 +0800] [47226] [DEBUG] POST /get_company_stargazers/
+[2022-12-11 21:27:36 +0800] [47227] [DEBUG] POST /get_contributors/core/
+[2022-12-11 21:27:36 +0800] [47226] [DEBUG] POST /get_company_commits/
+[2022-12-11 21:27:36 +0800] [47227] [DEBUG] POST /get_commit_by_time/
+[2022-12-11 21:27:36 +0800] [47226] [DEBUG] POST /get_contributors/all/
+[2022-12-11 21:27:36 +0800] [47226] [DEBUG] POST /get_company_issues/
+[2022-12-11 21:27:57 +0800] [47225] [DEBUG] OPTIONS /get_repo/
+[2022-12-11 21:27:57 +0800] [47225] [DEBUG] POST /get_repo/
+[2022-12-11 21:28:00 +0800] [47209] [DEBUG] OPTIONS /get_company_issues/
+[2022-12-11 21:28:00 +0800] [47226] [DEBUG] OPTIONS /get_commit_by_time/
+[2022-12-11 21:28:00 +0800] [47209] [DEBUG] OPTIONS /get_contributors/all/
+[2022-12-11 21:28:00 +0800] [47226] [DEBUG] OPTIONS /get_company_commits/
+[2022-12-11 21:28:00 +0800] [47226] [DEBUG] OPTIONS /get_contributors/core/
+[2022-12-11 21:28:00 +0800] [47209] [DEBUG] OPTIONS /get_company_stargazers/
+[2022-12-11 21:28:01 +0800] [47209] [DEBUG] POST /get_company_issues/
+[2022-12-11 21:28:01 +0800] [47226] [DEBUG] POST /get_commit_by_time/
+[2022-12-11 21:28:01 +0800] [47209] [DEBUG] POST /get_contributors/all/
+[2022-12-11 21:28:02 +0800] [47226] [DEBUG] POST /get_contributors/core/
+[2022-12-11 21:28:02 +0800] [47209] [DEBUG] POST /get_company_stargazers/
+[2022-12-11 21:28:02 +0800] [47226] [DEBUG] POST /get_company_commits/
+[2022-12-11 21:28:02 +0800] [47225] [DEBUG] GET /cloud/undefined/https://github.com/tianzhi0549/FCOS
+[2022-12-11 21:28:20 +0800] [47226] [DEBUG] OPTIONS /get_contributors/all/
+[2022-12-11 21:28:20 +0800] [47209] [DEBUG] OPTIONS /get_contributors/all/
+[2022-12-11 21:28:20 +0800] [47209] [DEBUG] OPTIONS /get_commit_by_time/
+[2022-12-11 21:28:20 +0800] [47227] [DEBUG] OPTIONS /get_commit_by_time/
+[2022-12-11 21:28:20 +0800] [47209] [DEBUG] OPTIONS /get_company_stargazers/
+[2022-12-11 21:28:20 +0800] [47227] [DEBUG] OPTIONS /get_company_stargazers/
+[2022-12-11 21:28:20 +0800] [47227] [DEBUG] OPTIONS /get_company_issues/
+[2022-12-11 21:28:20 +0800] [47226] [DEBUG] OPTIONS /get_company_commits/
+[2022-12-11 21:28:20 +0800] [47209] [DEBUG] OPTIONS /get_company_commits/
+[2022-12-11 21:28:20 +0800] [47209] [DEBUG] OPTIONS /get_company_issues/
+[2022-12-11 21:28:21 +0800] [47227] [DEBUG] POST /get_contributors/all/
+[2022-12-11 21:28:21 +0800] [47226] [DEBUG] POST /get_commit_by_time/
+[2022-12-11 21:28:21 +0800] [47227] [DEBUG] POST /get_commit_by_time/
+[2022-12-11 21:28:21 +0800] [47209] [DEBUG] POST /get_contributors/all/
+[2022-12-11 21:28:21 +0800] [47209] [DEBUG] POST /get_company_stargazers/
+[2022-12-11 21:28:21 +0800] [47209] [DEBUG] POST /get_company_stargazers/
+[2022-12-11 21:28:21 +0800] [47227] [DEBUG] POST /get_company_commits/
+[2022-12-11 21:28:22 +0800] [47209] [DEBUG] POST /get_company_issues/
+[2022-12-11 21:28:23 +0800] [47209] [DEBUG] POST /get_company_commits/
+[2022-12-11 21:28:23 +0800] [47209] [DEBUG] POST /get_company_issues/
+[2022-12-11 21:28:27 +0800] [47225] [DEBUG] POST /get_company_stargazers/
+[2022-12-11 21:28:27 +0800] [47227] [DEBUG] POST /get_company_stargazers/
+[2022-12-11 21:28:27 +0800] [47225] [DEBUG] POST /get_company_commits/
+[2022-12-11 21:28:27 +0800] [47225] [DEBUG] POST /get_company_issues/
+[2022-12-11 21:28:27 +0800] [47209] [DEBUG] POST /get_company_commits/
+[2022-12-11 21:28:27 +0800] [47209] [DEBUG] POST /get_company_issues/
+[2022-12-11 21:28:27 +0800] [47227] [DEBUG] POST /get_commit_by_time/
+[2022-12-11 21:28:27 +0800] [47225] [DEBUG] POST /get_commit_by_time/
+[2022-12-11 21:28:27 +0800] [47209] [DEBUG] POST /get_contributors/all/
+[2022-12-11 21:28:27 +0800] [47225] [DEBUG] POST /get_contributors/all/
+[2022-12-11 21:28:27 +0800] [47209] [DEBUG] POST /get_company_stargazers/
+[2022-12-11 21:28:27 +0800] [47225] [DEBUG] POST /get_company_stargazers/
+[2022-12-11 21:28:27 +0800] [47209] [DEBUG] POST /get_company_commits/
+[2022-12-11 21:28:27 +0800] [47225] [DEBUG] POST /get_company_commits/
+[2022-12-11 21:28:27 +0800] [47225] [DEBUG] POST /get_commit_by_time/
+[2022-12-11 21:28:27 +0800] [47209] [DEBUG] POST /get_company_issues/
+[2022-12-11 21:28:27 +0800] [47225] [DEBUG] POST /get_company_issues/
+[2022-12-11 21:28:27 +0800] [47225] [DEBUG] POST /get_contributors/all/
+[2022-12-11 21:28:27 +0800] [47209] [DEBUG] POST /get_commit_by_time/
+[2022-12-11 21:28:27 +0800] [47209] [DEBUG] POST /get_contributors/all/
+[2022-12-11 21:30:31 +0800] [47227] [DEBUG] OPTIONS /get_commit_by_time/
+[2022-12-11 21:30:31 +0800] [47227] [DEBUG] OPTIONS /get_contributors/all/
+[2022-12-11 21:30:31 +0800] [47225] [DEBUG] OPTIONS /get_commit_by_time/
+[2022-12-11 21:30:31 +0800] [47227] [DEBUG] OPTIONS /get_company_stargazers/
+[2022-12-11 21:30:31 +0800] [47225] [DEBUG] OPTIONS /get_company_stargazers/
+[2022-12-11 21:30:31 +0800] [47227] [DEBUG] OPTIONS /get_contributors/all/
+[2022-12-11 21:30:31 +0800] [47227] [DEBUG] OPTIONS /get_company_issues/
+[2022-12-11 21:30:31 +0800] [47225] [DEBUG] POST /get_contributors/all/
+[2022-12-11 21:30:31 +0800] [47227] [DEBUG] OPTIONS /get_company_issues/
+[2022-12-11 21:30:31 +0800] [47225] [DEBUG] OPTIONS /get_company_commits/
+[2022-12-11 21:30:31 +0800] [47227] [DEBUG] OPTIONS /get_company_commits/
+[2022-12-11 21:30:31 +0800] [47227] [DEBUG] POST /get_company_stargazers/
+[2022-12-11 21:30:31 +0800] [47227] [DEBUG] POST /get_contributors/all/
+[2022-12-11 21:30:31 +0800] [47225] [DEBUG] POST /get_company_stargazers/
+[2022-12-11 21:30:31 +0800] [47227] [DEBUG] POST /get_commit_by_time/
+[2022-12-11 21:30:31 +0800] [47225] [DEBUG] POST /get_company_issues/
+[2022-12-11 21:30:31 +0800] [47225] [DEBUG] POST /get_company_commits/
+[2022-12-11 21:30:31 +0800] [47227] [DEBUG] POST /get_company_issues/
+[2022-12-11 21:30:31 +0800] [47227] [DEBUG] POST /get_company_commits/
+[2022-12-11 21:30:31 +0800] [47227] [DEBUG] POST /get_commit_by_time/
+[2022-12-11 21:35:04 +0800] [47226] [DEBUG] GET /cloud/undefined/https://github.com/tianzhi0549/FCOS
+[2022-12-11 21:35:08 +0800] [47226] [DEBUG] Closing connection. 
+[2022-12-11 23:44:06 +0800] [47225] [DEBUG] OPTIONS /get_contributors/all/
+[2022-12-11 23:44:06 +0800] [47209] [DEBUG] OPTIONS /get_contributors/all/
+[2022-12-11 23:44:06 +0800] [47225] [DEBUG] OPTIONS /get_company_stargazers/
+[2022-12-11 23:44:06 +0800] [47225] [DEBUG] OPTIONS /get_company_stargazers/
+[2022-12-11 23:44:06 +0800] [47209] [DEBUG] OPTIONS /get_commit_by_time/
+[2022-12-11 23:44:06 +0800] [47225] [DEBUG] OPTIONS /get_company_commits/
+[2022-12-11 23:44:06 +0800] [47209] [DEBUG] OPTIONS /get_company_issues/
+[2022-12-11 23:44:06 +0800] [47225] [DEBUG] OPTIONS /get_company_issues/
+[2022-12-11 23:44:06 +0800] [47225] [DEBUG] OPTIONS /get_company_commits/
+[2022-12-11 23:44:06 +0800] [47209] [DEBUG] POST /get_contributors/all/
+[2022-12-11 23:44:06 +0800] [47209] [DEBUG] POST /get_company_stargazers/
+[2022-12-11 23:44:06 +0800] [47225] [DEBUG] POST /get_company_stargazers/
+[2022-12-11 23:44:06 +0800] [47225] [DEBUG] POST /get_contributors/all/
+[2022-12-11 23:44:06 +0800] [47225] [DEBUG] POST /get_commit_by_time/
+[2022-12-11 23:44:06 +0800] [47209] [DEBUG] POST /get_company_issues/
+[2022-12-11 23:44:06 +0800] [47209] [DEBUG] POST /get_company_commits/
+[2022-12-11 23:44:06 +0800] [47209] [DEBUG] OPTIONS /get_commit_by_time/
+[2022-12-11 23:44:06 +0800] [47225] [DEBUG] POST /get_company_commits/
+[2022-12-11 23:44:06 +0800] [47225] [DEBUG] POST /get_company_issues/
+[2022-12-11 23:44:06 +0800] [47209] [DEBUG] POST /get_commit_by_time/
+[2022-12-11 23:44:32 +0800] [47225] [DEBUG] GET /get_user/ezyang/
+[2022-12-11 23:55:20 +0800] [47225] [DEBUG] GET /get_user/ezyang/
+[2022-12-11 23:55:20 +0800] [47225] [DEBUG] Closing connection. 

@@ -27,12 +27,12 @@ def tcg(texts):
     return string
 
 def make_cloud_img(text, threashold=5):
-    mask = np.array(Image.open('cloud\\0background.jpg'))
+    mask = np.array(Image.open('cloud/0background.jpg'))
     image_colors = ImageColorGenerator(mask) # 从图片提取颜色
 
-    # font = 'SKTAITI.TTF'
-    # font = "cloud\\Thin.TTF"
-    font = "cloud\\Song.ttf"
+    # font = 'cloud/SKTAITI.TTF'
+    font = "cloud/Thin.ttf"
+    # font = "cloud/Song.ttf"
     
     # string=tcg(text)
     # print(string)
@@ -40,7 +40,7 @@ def make_cloud_img(text, threashold=5):
     if(len(stem_string) < 5):
         stem_string += "(Insufficient Issues)"
 
-    img = Image.open('cloud\\Octocat.jpg') 
+    img = Image.open('cloud/Octocat.jpg') 
     img_array = np.array(img) 
     stopword=['', 
         "debug",
@@ -51,12 +51,19 @@ def make_cloud_img(text, threashold=5):
         "build",
         "issue",
         "issu",
-        "build"
+        "build",
+        "remove",
+        "remov",
+        "add",
+        "delete",
+        "delet",
+        "update",
+        "updat"
     ]  
     wc = WordCloud(
         background_color='white',
         width=800,
-        height=655,
+        height=600,
         mask=img_array, 
         font_path=font,
         stopwords=stopword,
