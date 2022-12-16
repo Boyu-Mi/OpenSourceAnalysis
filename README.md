@@ -6,11 +6,11 @@ ZJU-SRE project
 
 先自己新建一个test数据库（也可以是别的，比如改成sre）
 
-![image-20221209175750187](README.assets\image-20221209175750187.png)
+![image-20221209175750187](./README.assets/image-20221209175750187.png)
 
 随后打开Mysql的命令行
 
-![image-20221209175525818](README.assets\image-20221209175525818.png)
+![image-20221209175525818](./README.assets/image-20221209175525818.png)
 
 输入如下
 
@@ -32,7 +32,7 @@ cd 到程序根目录
 
 3. 激活虚拟环境env ，即运行这个文件： (直接命令行输入`d:/本项目绝对路径/venv/Scripts/activate.bat`也可)
 
-![image-20221209180103752](README.assets\image-20221209180103752.png)
+![image-20221209180103752](./README.assets/image-20221209180103752.png)
 
 4. 安装项目依赖 `pip install -r requirements.txt` 
 
