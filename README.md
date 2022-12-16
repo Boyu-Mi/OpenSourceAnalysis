@@ -1,7 +1,5 @@
 # OpenSourceAnalysis-backend
 
-[toc]
-
 ZJU-SRE project
 
 ### 构建数据库：
@@ -34,7 +32,7 @@ cd 到程序根目录
 
 3. 激活虚拟环境env ，即运行这个文件： (直接命令行输入`d:/本项目绝对路径/venv/Scripts/activate.bat`也可)
 
-    ![image-20221209180103752](README.assets\image-20221209180103752.png)
+![image-20221209180103752](README.assets\image-20221209180103752.png)
 
 4. 安装项目依赖 `pip install -r requirements.txt` 
 
@@ -75,3 +73,62 @@ cd frontend
 
 1. `cd frontend`
 2. `npm start`
+
+
+### 后端部署
+
+#### 部署工具链
+
+| 工具名称 | 版本   |
+| -------- | ------ |
+| gunicorn | 20.1.0 |
+| gevent   |        |
+
+#### 部署方法
+
+​	安装 python 依赖：
+
+```sh
+$ pip install gunicorn
+$ pip install gevent
+```
+
+​	在项目根目录下添加 `server_config.py` 写入后端服务器配置：
+
+```python
+import os
+import gevent.monkey
+gevent.monkey.patch_all()
+import multiprocessing
+ 
+#用于控制errorlog的信息级别，可以设置为debug、info、warning、error、critical
+loglevel = 'debug'
+ 
+#监听地址+端口
+bind = "0.0.0.0:5001"
+ 
+#定义日志存储
+if not os.path.exists('log/'):
+    os.makedirs('log/')
+pidfile = "log/gunicorn.pid"
+#访问日志
+accesslog = "log/access.log"
+#错误日志
+errorlog = "log/debug.log"
+ 
+#开启后台运行，默认值为False
+daemon = True
+ 
+#启动的进程数
+workers = multiprocessing.cpu_count()*2
+ 
+#指开启的每个工作进程的模式类型，默认为sync模式，也可使用gevent模式
+worker_class = 'gevent'
+x_forwarded_for_header = 'X-FORWARDED-FOR'
+```
+
+​	启动后端服务器：
+
+```sh
+$ gunicorn --config=server_config.py app:app   
+```
